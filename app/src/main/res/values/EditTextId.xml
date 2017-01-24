@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="options" type="id">
+        <item name="opt0" type="id"/>
+        <item name="opt1" type="id"/>
+        <item name="opt2" type="id"/>
+        <item name="opt3" type="id"/>
+        <item name="opt4" type="id"/>
+        <item name="opt5" type="id"/>
+        <item name="opt6" type="id"/>
+        <item name="opt7" type="id"/>
+        <item name="opt8" type="id"/>
+        <item name="opt9" type="id"/>
+        <item name="opt10" type="id"/>
+        <item name="opt11" type="id"/>
+        <item name="opt12" type="id"/>
+        <item name="opt13" type="id"/>
+        <item name="opt14" type="id"/>
+        <item name="opt15" type="id"/>
+        <item name="opt16" type="id"/>
+        <item name="opt17" type="id"/>
+        <item name="opt18" type="id"/>
+        <item name="opt19" type="id"/>
+        <item name="opt20" type="id"/>
+        <item name="opt21" type="id"/>
+        <item name="opt22" type="id"/>
+        <item name="opt23" type="id"/>
+        <item name="opt24" type="id"/>
+        <item name="opt25" type="id"/>
+        <item name="opt26" type="id"/>
+        <item name="opt27" type="id"/>
+        <item name="opt28" type="id"/>
+        <item name="opt29" type="id"/>
+        <item name="opt30" type="id"/>
+        <item name="opt31" type="id"/>
+        <item name="opt32" type="id"/>
+        <item name="opt33" type="id"/>
+        <item name="opt34" type="id"/>
+        <item name="opt35" type="id"/>
+        <item name="opt36" type="id"/>
+        <item name="opt37" type="id"/>
+        <item name="opt38" type="id"/>
+        <item name="opt39" type="id"/>
+        <item name="opt40" type="id"/>
+        <item name="opt41" type="id"/>
+        <item name="opt42" type="id"/>
+        <item name="opt43" type="id"/>
+        <item name="opt44" type="id"/>
+        <item name="opt45" type="id"/>
+        <item name="opt46" type="id"/>
+        <item name="opt47" type="id"/>
+        <item name="opt48" type="id"/>
+        <item name="opt49" type="id"/>
+        <item name="opt50" type="id"/>
+    </string-array>
+
+</resources>

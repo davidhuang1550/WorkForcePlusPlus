@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Profile"
+            android:title="Profile"
+            android:icon="@drawable/profile"
+            />
+        <item
+            android:id="@+id/Barcode"
+            android:title="Barcode"
+            android:icon="@drawable/barcode"
+            />
+        <item
+            android:id="@+id/Mail"
+            android:title="Mail"
+            android:icon="@drawable/mail"
+            />
+        <item
+            android:id="@+id/SwapShift"
+            android:title="Swap Shifts"
+            android:icon="@drawable/calendar"
+            />
+        <item
+            android:id="@+id/ViewShift"
+            android:title="View Shift"
+            android:icon="@drawable/calendar"
+            />
+        <item
+            android:id="@+id/Logout"
+            android:title="Log Out"
+            android:icon="@drawable/logout"
+            />
+    </group>
+
+    <!--<item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>-->
+
+</menu>

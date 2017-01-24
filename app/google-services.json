@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "138740069819",
+    "firebase_url": "https://workforceplusplus.firebaseio.com",
+    "project_id": "workforceplusplus",
+    "storage_bucket": "workforceplusplus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138740069819:android:0fe6e96f2a926441",
+        "android_client_info": {
+          "package_name": "com.example.ddnbinc.workforceplusplus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "138740069819-sdeplshj338t3vff1v32rie7f24557mo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPVnyxZO0dqqdW0Hb74B2OgQwiT8pUpHc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
