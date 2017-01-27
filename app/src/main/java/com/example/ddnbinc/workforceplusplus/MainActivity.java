@@ -1,6 +1,8 @@
 package com.example.ddnbinc.workforceplusplus;
 
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,12 +17,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
+import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.GetUserPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShift;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift;
-import com.example.ddnbinc.workforceplusplus.Users.Employee;
+import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
+import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener {
 
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private Employee employee;
@@ -31,6 +39,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+       // FirebaseAuth.getInstance().signOut();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -52,10 +63,25 @@ public class MainActivity extends AppCompatActivity
 
         fab.hide(); // using this to give up shifts
 
-
         dataBaseConnectionPresenter = new DataBaseConnectionPresenter();
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
+
+        Bundle bundle = getIntent().getExtras();
+        if(bundle!=null){
+
+            ProgressBarPresenter progressBarPresenter = new ProgressBarPresenter(this,"Loading");
+            progressBarPresenter.Show();
+
+            NotificationManager notificationManager = new NotificationManager(this,bundle.getBundle("Info"),progressBarPresenter);
+            GetUserPresenter getUserPresenter= new GetUserPresenter(dataBaseConnectionPresenter,this,progressBarPresenter);
+            getUserPresenter.setFlag(notificationManager);
+            getUserPresenter.getUser();
+
+        }
+        else{
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
+        }
+
     }
 
     @Override
@@ -70,6 +96,14 @@ public class MainActivity extends AppCompatActivity
     public DataBaseConnectionPresenter getDataBaseConnectionPresenter(){
         return dataBaseConnectionPresenter;
     }
+
+    public void setUserFcmToken(){
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.FCM_PREF), Context.MODE_PRIVATE);
+        String token =sharedPreferences.getString(getString(R.string.FCM_TOKEN),"");
+        if(!token.equals("")) dataBaseConnectionPresenter.getDbReference().child("Users").child(dataBaseConnectionPresenter.getUID()).
+                child("FcmToken").setValue(token);
+    }
+
     public void setEmployee(Employee e){
         employee=e;
     }
@@ -95,10 +129,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackStackChanged() {
+
+        if (getFragmentManager().getBackStackEntryCount() > 0 ){
+
+            getFragmentManager().popBackStack();
+
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -123,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.Mail) {
 
         } else if (id == R.id.SwapShift) {
-
+            fragmentManager .beginTransaction().replace(R.id.content_frame,new SwapShift(),"SwapShift").commit();
         } else if (id == R.id.ViewShift) {
             fragmentManager .beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
 
@@ -134,5 +177,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FirebaseAuth.getInstance().signOut();
     }
 }

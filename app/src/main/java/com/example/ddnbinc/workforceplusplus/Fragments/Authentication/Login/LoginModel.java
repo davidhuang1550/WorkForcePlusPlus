@@ -35,6 +35,7 @@ public class LoginModel {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(!(task.isSuccessful())){
                     Toast.makeText(mActivity,"authentication failed",Toast.LENGTH_SHORT).show();
+                    progressBarPresenter.Hide();
                 }
                 else{
 

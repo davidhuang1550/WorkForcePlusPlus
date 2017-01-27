@@ -1,18 +1,17 @@
-package com.example.ddnbinc.workforceplusplus.Users;
-
-import android.os.Parcelable;
+package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
 /**
  * Created by david on 2017-01-23.
+ * reason for duplication incase of future implementations of different components
  */
 
-public class Manager extends Employee{
+public class TeamMember extends Employee {
 
-    public Manager(){
+    public TeamMember(){
 
     }
-    public Manager(String f, String s, String e,String p,String id,String priv){
-       super(f,s,e,p,id,priv);
+    public TeamMember(String f, String s, String e,String p,String id,String priv){
+        super(f,s,e,p,id,priv);
     }
     public String getEmail() {
         return super.getEmail();
@@ -22,19 +21,12 @@ public class Manager extends Employee{
         super.setEmail(email);
     }
 
-    public String getManagerId() {
-        return super.getManagerId();
-    }
     public String getPassword() {
         return super.getPassword();
     }
 
     public void setPassword(String password) {
-       super.setPassword(password);
-    }
-
-    public void setManagerId(String managerId) {
-        super.setManagerId(managerId);
+        super.setPassword(password);
     }
 
     public String getStartDate() {
@@ -66,5 +58,4 @@ public class Manager extends Employee{
     public void setPrivilleges(String privilleges) {
         super.setPrivilleges(privilleges);
     }
-
 }

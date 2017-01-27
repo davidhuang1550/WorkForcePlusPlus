@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
+import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
 
 /**
  * Created by david on 2017-01-23.
@@ -16,5 +17,8 @@ public class GetUserPresenter {
     }
     public void getUser(){
         getUserModel.getUser();
+    }
+    public void setFlag(NotificationManager not){
+        getUserModel.setFlag(not);
     }
 }

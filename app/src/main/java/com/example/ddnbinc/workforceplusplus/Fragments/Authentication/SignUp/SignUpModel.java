@@ -10,7 +10,7 @@ import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresente
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
-import com.example.ddnbinc.workforceplusplus.Users.Manager;
+import com.example.ddnbinc.workforceplusplus.Classes.Users.Manager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

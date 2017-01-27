@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/layouttable"
+            android:stretchColumns="1">
+
+            <TableRow>
+                <TextView
+                    android:text="Day 1"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day1"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="Day 2"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day2"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="Day 3"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day3"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="Day 4"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day4"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="Day 5"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day5"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+
+            <TableRow>
+                <TextView
+                    android:text="Day 6"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day6"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:text="Day 7"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/day7"
+                    android:background="@drawable/view_shift_time"/>
+            </TableRow>
+
+        </TableLayout>
+
+
+
+
+    </FrameLayout>
+
+</LinearLayout>

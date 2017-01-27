@@ -1,17 +1,16 @@
-package com.example.ddnbinc.workforceplusplus.Users;
+package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
 /**
  * Created by david on 2017-01-23.
- * reason for duplication incase of future implementations of different components
  */
 
-public class TeamMember extends Employee {
+public class Manager extends Employee{
 
-    public TeamMember(){
+    public Manager(){
 
     }
-    public TeamMember(String f, String s, String e,String p,String id,String priv){
-        super(f,s,e,p,id,priv);
+    public Manager(String f, String s, String e,String p,String id,String priv){
+       super(f,s,e,p,id,priv);
     }
     public String getEmail() {
         return super.getEmail();
@@ -21,21 +20,14 @@ public class TeamMember extends Employee {
         super.setEmail(email);
     }
 
-    public String getManagerId() {
-        return super.getManagerId();
-    }
     public String getPassword() {
         return super.getPassword();
     }
 
     public void setPassword(String password) {
-        super.setPassword(password);
+       super.setPassword(password);
     }
-
-    public void setManagerId(String managerId) {
-        super.setManagerId(managerId);
-    }
-
+    
     public String getStartDate() {
         return super.getStartDate();
     }
@@ -65,4 +57,5 @@ public class TeamMember extends Employee {
     public void setPrivilleges(String privilleges) {
         super.setPrivilleges(privilleges);
     }
+
 }

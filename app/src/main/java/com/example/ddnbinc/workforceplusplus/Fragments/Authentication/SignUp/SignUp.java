@@ -2,9 +2,7 @@ package com.example.ddnbinc.workforceplusplus.Fragments.Authentication.SignUp;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +13,7 @@ import android.widget.Toast;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
-import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
-import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
-import com.example.ddnbinc.workforceplusplus.Users.Manager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by david on 2017-01-23.

@@ -1,79 +1,118 @@
 package com.example.ddnbinc.workforceplusplus.AsyncTask;
 
-import android.app.Activity;
-import android.os.AsyncTask;
-
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
-import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
-import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShift;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShiftModel;
-import com.example.ddnbinc.workforceplusplus.Users.GivenUpShift;
+import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 /**
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftTask extends AsyncTask<Void,Void,Void> {
+public class SwapShiftTask {
 
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
-    private Activity mActivity;
-    private HashMap<String , ArrayList<GivenUpShift>> shifts;
-    private String[] days = {"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"};
-    private int count;
-
+    private LinkedHashMap<String , ArrayList<GivenUpShift>> shifts;
+    private Long time_now;
+    private Long time_diff;
+    private SimpleDateFormat formatter;
     private SwapShiftModel swapShiftModel;
 
-    public SwapShiftTask(DataBaseConnectionPresenter d, Activity a, SwapShiftModel swap){
+    public SwapShiftTask(DataBaseConnectionPresenter d, SwapShiftModel swap,Long start, Long end){
         dataBaseConnectionPresenter=d;
-        mActivity=a;
-        shifts= new HashMap<>();
+        shifts= new LinkedHashMap<>();
         swapShiftModel=swap;
+        time_now = start;
+        time_diff=end;
+        formatter = new SimpleDateFormat("EEEE");
     }
 
-    @Override
-    protected Void doInBackground(Void... voids) {
-        Long time_now = (System.currentTimeMillis() / 1000);
-        Long time_diff=(System.currentTimeMillis() / 1000)+86400;
-        for(count=0; count<7; count++){
-            dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("StartTime").startAt(time_now).
-                    endAt(time_diff).addListenerForSingleValueEvent(new ValueEventListener() {
+
+    public String setDays(Long time){
+
+        String date = formatter.format(new Date(time * 1000L));
+        return date;
+    }
+
+    public void Execute() {
+            dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("StartTime").
+                    startAt(time_now).endAt(time_diff).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(!dataSnapshot.hasChildren()){
-                        shifts.put(days[count],new ArrayList<GivenUpShift>());
-                    }
-                    else{
-                        ArrayList<GivenUpShift> s = new ArrayList<GivenUpShift>();
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                            GivenUpShift temp_shift = snapshot.getValue(GivenUpShift.class);
-                            s.add(temp_shift);
+                    try {
+                        Iterable iterator = dataSnapshot.getChildren();
+                        Iterator loop = iterator.iterator();
+                        time_now+=86400;
+                        ArrayList<GivenUpShift> tempshifts = new ArrayList<GivenUpShift>();
+                        DataSnapshot dataSnapshotShift = null;
+                        GivenUpShift givenUpShift= null;
+                        boolean next = true;
+
+                        while(loop.hasNext() ||next==false){
+                            if(next) {
+                                dataSnapshotShift=(DataSnapshot)loop.next();
+                                givenUpShift = dataSnapshotShift.getValue(GivenUpShift.class);
+                                givenUpShift.setShiftId(dataSnapshotShift.getKey());
+                            }
+                            try {
+                                if(givenUpShift.getStartTime()<=time_now){
+                                    tempshifts.add(givenUpShift);
+                                    next=true;
+                                    if(!loop.hasNext()){
+                                        cloneobj(tempshifts,time_now);
+                                        time_now+=86400;
+                                    }
+
+                                }
+                                else{
+                                    cloneobj(tempshifts,time_now);
+                                    time_now+=86400;
+                                    next=false;
+                                    if(time_now>time_diff)break;
+                                }
+                            }catch (ClassCastException e){
+                                e.printStackTrace();
+                            }
+
                         }
-                        shifts.put(days[count],s);
-                    }
+                        if(shifts.size()<7){
+                            for(int i= shifts.size(); i<7;i++){
+                                shifts.put(setDays(time_now),tempshifts);
+                                time_now+=86400;
+                            }
+                        }
+                        swapShiftModel.setEndTime(time_diff);
+                        swapShiftModel.setValues(shifts);
+
+
+
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    System.out.println("HELLO");
                 }
             });
-
-
-
         }
+    public synchronized void  cloneobj(ArrayList<GivenUpShift> temp,Long time){
+        ArrayList<GivenUpShift> into= new ArrayList<GivenUpShift>();
+        for(GivenUpShift s : temp){
+            into.add(s);
+        }
+        shifts.put(setDays(time),into);
+        temp.clear();
 
-
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        swapShiftModel.setValues(shifts);
     }
 }
+

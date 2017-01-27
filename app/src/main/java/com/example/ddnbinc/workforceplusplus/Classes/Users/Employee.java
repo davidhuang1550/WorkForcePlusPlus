@@ -1,10 +1,12 @@
-package com.example.ddnbinc.workforceplusplus.Users;
+package com.example.ddnbinc.workforceplusplus.Classes.Users;
+
+import java.io.Serializable;
 
 /**
  * Created by david on 2017-01-23.
  */
 
-public abstract class Employee {
+public abstract class Employee implements Serializable{
     private String FcmToken;
     private String StartDate;
     private String Email;
@@ -32,9 +34,6 @@ public abstract class Employee {
         Email = email;
     }
 
-    public String getManagerId() {
-        return FcmToken;
-    }
     public String getPassword() {
         return Password;
     }
@@ -43,9 +42,6 @@ public abstract class Employee {
         Password = password;
     }
 
-    public void setManagerId(String managerId) {
-        FcmToken = managerId;
-    }
 
     public String getStartDate() {
         return StartDate;

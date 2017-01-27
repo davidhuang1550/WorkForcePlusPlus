@@ -1,30 +1,32 @@
-package com.example.ddnbinc.workforceplusplus.Users;
+package com.example.ddnbinc.workforceplusplus.Classes;
+
+import java.io.Serializable;
 
 /**
- * Created by david on 2017-01-23.
+ * Created by davidhuang on 2017-01-26.
  */
 
-public class GivenUpShift {
+public class Shifts implements Serializable {
 
-    private String EmployeeId;
+    private String employeeid;
     private Long StartTime;
     private Long EndTime;
     private String ShiftId;
-    public GivenUpShift(){
+    public Shifts(){
 
     }
-    public GivenUpShift(String e,Long start, Long end,String Shift){
-        EmployeeId=e;
+    public Shifts(String e,Long start, Long end,String Shift){
+        employeeid=e;
         StartTime=start;
         EndTime=end;
         ShiftId=Shift;
     }
-    public String getEmployeeId() {
-        return EmployeeId;
+    public String getEmployeeid() {
+        return employeeid;
     }
 
-    public void setEmployeeId(String employeeId) {
-        EmployeeId = employeeId;
+    public void setEmployeeid(String employeeId) {
+        employeeid = employeeId;
     }
 
     public Long getStartTime() {
@@ -50,7 +52,6 @@ public class GivenUpShift {
     public void setShiftId(String shiftId) {
         ShiftId = shiftId;
     }
-
 
 
 
