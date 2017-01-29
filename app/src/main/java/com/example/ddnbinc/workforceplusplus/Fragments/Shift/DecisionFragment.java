@@ -59,18 +59,22 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
         return myView;
     }
     public void init(Bundle b){
-        TextView giver = (TextView)myView.findViewById(R.id.giver);
-        TextView taker = (TextView)myView.findViewById(R.id.taker);
-        TextView time = (TextView)myView.findViewById(R.id.time);
+        try {
+            TextView giver = (TextView) myView.findViewById(R.id.giver);
+            TextView taker = (TextView) myView.findViewById(R.id.taker);
+            TextView time = (TextView) myView.findViewById(R.id.time);
 
-        employees[0] =(Employee)b.getSerializable("Giver");
-        employees[1]= (Employee)b.getSerializable("Taker");
+            employees[0] = (Employee) b.getSerializable("Giver");
+            employees[1] = (Employee) b.getSerializable("Taker");
 
 
-        giver.setText(employees[0].getEmail()+"Wants to give up a shift");
-        taker.setText("And "+employees[1].getEmail()+" wants to take the shift");
-        time.setText("At "+b.getString("Time"));
-        givenUpShift = (Shifts) b.getSerializable("Shift");
+            giver.setText(employees[0].getEmail() + "Wants to give up a shift");
+            taker.setText("And " + employees[1].getEmail() + " wants to take the shift");
+            time.setText("At " + b.getString("Time"));
+            givenUpShift = (Shifts) b.getSerializable("Shift");
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
 
 
     }
@@ -98,12 +102,17 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
         FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
     }
-
+    /*
+    shift trade denied move the pending shift back to given up shift for someone else to take
+     */
     public void MoveToGivenUpShifts(){
         destoryPending();
         AddToGivenUp();
 
     }
+    /*
+    remove from pending and given up and then swap the shifts with the two employees
+     */
     public void Accepted(){
         destoryPending();
         destoryGivenUp();
@@ -118,11 +127,14 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
 
     }
     public void swap(){
+        GivenUpShift givenUp = new GivenUpShift();
+        givenUp.setStartTime(givenUpShift.getStartTime());
+        givenUp.setEndTime(givenUpShift.getEndTime());
         dataBaseConnectionPresenter.getDbReference().child("Users")
                 .child(employees[0].getEmployeeId()).child("Shifts").child(givenUpShift.getShiftId()).setValue(null);
 
         dataBaseConnectionPresenter.getDbReference().child("Users").child(employees[1].getEmployeeId())
-                .child("Shifts").child(givenUpShift.getShiftId()).setValue(0);
+                .child("Shifts").child(givenUpShift.getShiftId()).setValue(givenUp);
     }
 
     public void AddToGivenUp(){

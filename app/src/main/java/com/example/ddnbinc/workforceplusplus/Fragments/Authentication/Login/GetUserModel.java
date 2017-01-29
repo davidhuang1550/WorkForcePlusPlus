@@ -46,6 +46,10 @@ public class GetUserModel {
     }
 
     public Void getUser() {
+        /*
+        this extra prevention is used specifically for the container acitivty
+
+         */
         if(dataBaseConnectionPresenter.getFirebaseUser()!=null) {
             uId = dataBaseConnectionPresenter.getFirebaseUser().getUid().toString();
             dataBaseConnectionPresenter.getDbReference().child("Users").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {

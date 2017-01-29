@@ -2,9 +2,7 @@ package com.example.ddnbinc.workforceplusplus.Notifications;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.Classes.Shifts;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
@@ -15,21 +13,20 @@ import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresente
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.DecisionFragment;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
+import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by davidhuang on 2017-01-26.
  * manages the notifications
  */
 
-public class NotificationManager {
+public class NotificationManager extends StringFormater{
 
     private Activity mActivity;
     private Bundle bundle;
@@ -40,6 +37,7 @@ public class NotificationManager {
     private Shifts shifts;
 
     public NotificationManager(Activity activity, Bundle b, ProgressBarPresenter prog){
+        super();
         mActivity=activity;
         bundle=b;
         employee= new Employee[2];
@@ -47,7 +45,9 @@ public class NotificationManager {
         dataBaseConnectionPresenter=((MainActivity)mActivity).getDataBaseConnectionPresenter();
     }
 
-
+/*
+fetch all the nessasary data
+ */
     public void setView(){
         String temp = bundle.getString("Taker");
       if(temp!=null) {
@@ -104,39 +104,28 @@ public class NotificationManager {
             }
         });
     }
+    /*
+    called once all info is gathered
+     */
     public void LoadView(){
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("Taker",(Serializable) employee[1]);
-        bundle.putSerializable("Giver",(Serializable) employee[0]);
-        bundle.putSerializable("Shift",(Serializable) shifts);
-        String time = Process(shifts.getStartTime(),shifts.getEndTime());
+        try {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("Taker", (Serializable) employee[1]);
+            bundle.putSerializable("Giver", (Serializable) employee[0]);
+            bundle.putSerializable("Shift", (Serializable) shifts);
+            String time = Process(shifts.getStartTime(), shifts.getEndTime());
 
-        bundle.putString("Time",time);
-        DecisionFragment decisionFragment = new DecisionFragment();
-        decisionFragment.setArguments(bundle);
+            bundle.putString("Time", time);
+            DecisionFragment decisionFragment = new DecisionFragment();
+            decisionFragment.setArguments(bundle);
 
-        FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.content_frame,decisionFragment).commit();
 
-    }
-    public String Process(Long s,Long e){
-        Long Start_time = (s % 86400);
-        Long End_time = (e % 86400);
+            FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
+            fragmentManager.beginTransaction().add(R.id.content_frame,decisionFragment).commit();
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
 
-        String start = combine(Start_time / 3600,(Start_time % 3600) / 60,Start_time);
-        String end = combine(End_time / 3600,(End_time % 3600) / 60,End_time);
-
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy");
-        String dateString_begin = formatter.format(new Date(s * 1000L))+" "+start+"-"+end;
-        return dateString_begin;
-    }
-    public String combine(Long hour, Long minutes, Long time){
-        String AMPM;
-        if (time >= 43200) {
-            AMPM = " PM";
-            if(time>=46800)hour-=12;
-        } else AMPM = " AM";
-        return  hour.toString()+":"+minutes.toString()+AMPM;
     }
 
 

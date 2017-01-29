@@ -14,6 +14,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 /**
  * Created by david on 2017-01-08.
+ * create notifications
  */
 
 public class FcmMessagingService extends FirebaseMessagingService {
@@ -25,6 +26,11 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
         // put bundle into intent then open it in main activity to open. fragment post
 
+
+        /*
+        once the notification is clicked on the intent will be fired and invoke a method on the main activity container
+        that will directly try to fetch the current logged in user then display the pending shift
+         */
         Intent intent = new Intent(this,MainActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ShiftId",shift);

@@ -23,6 +23,10 @@ public class SendNotification {
 
     private Activity mActivity;
     private GivenUpShift givenUpShift;
+    private String fcm="fgnZAtVfrgs:APA91bFurWhAxDEakW7UjtKL7Akp12m2hYDgCkEPcdiSweLPLu7AKobS7IxIxBVrusYMFK5rSrG6FqDVripH7Fwp7bL5S-Wy3i9KEaTqZpQBpsjUY1pShZRJVmKlbHzpnaCHwvaEuom9";
+    /*
+    url that contains php code that act as a meditator which uses CURL to communicate to the firebase server
+     */
     private String app_server_url ="https://ddnbinc.000webhostapp.com/fcm_insert.php";
     private String EmployeeId;
     public SendNotification(Activity activity, GivenUpShift given,String id){
@@ -51,7 +55,11 @@ public class SendNotification {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
                 // replace the fcm_token get instance with a real fcm token
-                params.put("fcm_token", FirebaseInstanceId.getInstance().getToken());
+                /*
+                set map will appear on the php server as a POST which they will then parse to send as title
+                and body
+                 */
+                params.put("fcm_token", fcm);
                 params.put("shift_id",givenUpShift.getShiftId());
                 params.put("Taker",EmployeeId);
 

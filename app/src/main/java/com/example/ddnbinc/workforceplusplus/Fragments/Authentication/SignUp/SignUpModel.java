@@ -5,6 +5,8 @@ import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
+import com.example.ddnbinc.workforceplusplus.Classes.Users.TeamMember;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
@@ -53,7 +55,7 @@ public class SignUpModel {
                     Date cDate = new Date();
                     String fDate = new SimpleDateFormat("yyyy-MM-dd").format(cDate);
 
-                    Manager manager = new Manager( FirebaseInstanceId.getInstance().getToken(),fDate,Email,Password,task.getResult().getUser().getUid(),"E");
+                    Employee manager = new TeamMember( FirebaseInstanceId.getInstance().getToken(),fDate,Email,Password,task.getResult().getUser().getUid(),null);
 
                     dataBaseConnectionPresenter.getDbReference().child("Users").child(task.getResult().getUser().getUid()).setValue(manager);
 

@@ -24,6 +24,7 @@ import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShift
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
+import com.example.ddnbinc.workforceplusplus.Utilities.FabPresenter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity
 
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private Employee employee;
+    private FabPresenter fabPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +45,6 @@ public class MainActivity extends AppCompatActivity
 
        // FirebaseAuth.getInstance().signOut();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -61,12 +54,18 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        fab.hide(); // using this to give up shifts
+       FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
+        fabPresenter = new FabPresenter(floatingActionButton,this);
+
+        fabPresenter.Hide();
 
         dataBaseConnectionPresenter = new DataBaseConnectionPresenter();
 
         Bundle bundle = getIntent().getExtras();
         if(bundle!=null){
+            /*
+            called when theres a notification
+             */
 
             ProgressBarPresenter progressBarPresenter = new ProgressBarPresenter(this,"Loading");
             progressBarPresenter.Show();
@@ -101,11 +100,17 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.FCM_PREF), Context.MODE_PRIVATE);
         String token =sharedPreferences.getString(getString(R.string.FCM_TOKEN),"");
         if(!token.equals("")) dataBaseConnectionPresenter.getDbReference().child("Users").child(dataBaseConnectionPresenter.getUID()).
-                child("FcmToken").setValue(token);
+                child("fcmToken").setValue(token);
     }
 
     public void setEmployee(Employee e){
         employee=e;
+    }
+    public void showFab(){
+     fabPresenter.Show();
+    }
+    public void hideFab(){
+        fabPresenter.Hide();
     }
     public Employee getEmployee(){
         return employee;

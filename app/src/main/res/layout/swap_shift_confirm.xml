@@ -30,7 +30,7 @@
             android:layout_height="match_parent">
             <Button android:id="@+id/yes"
                 android:text="Confirm"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:textColor="@color/white"
                 android:layout_weight="1"
                 android:layout_marginRight="20dp"
@@ -41,7 +41,7 @@
             <Button
                 android:id="@+id/no"
                 android:text="Cancel"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 android:layout_weight="1"
                 android:layout_marginLeft="20dp"
                 android:textColor="@color/white"

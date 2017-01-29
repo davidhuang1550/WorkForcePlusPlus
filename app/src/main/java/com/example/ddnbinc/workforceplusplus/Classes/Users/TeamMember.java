@@ -1,11 +1,13 @@
 package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
+import java.io.Serializable;
+
 /**
  * Created by david on 2017-01-23.
  * reason for duplication incase of future implementations of different components
  */
 
-public class TeamMember extends Employee {
+public class TeamMember extends Employee implements Serializable {
 
     public TeamMember(){
 

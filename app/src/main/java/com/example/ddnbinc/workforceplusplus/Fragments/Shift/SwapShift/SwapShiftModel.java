@@ -1,6 +1,7 @@
 package com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
@@ -8,16 +9,20 @@ import android.os.Bundle;
 import android.support.v4.app.BundleCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.AsyncTask.SwapShiftTask;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Dialog.ConfirmationDialog;
+import com.example.ddnbinc.workforceplusplus.Dialog.GiveUpConfirmation;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.Confirm_GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
+import com.google.firebase.database.Query;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -40,7 +45,9 @@ public class SwapShiftModel {
     private TableLayout tableLayout;
     private HashMap<String,ArrayList<GivenUpShift>> shifts;
     private Long endTime;
+    private Query query;
     private View MainView;
+    private boolean clickable;
 
     public SwapShiftModel(Activity a, DataBaseConnectionPresenter data, SwipeRefreshLayout swipe, View v,View main){
         mActivity= a;
@@ -51,29 +58,64 @@ public class SwapShiftModel {
         tableLayout= (TableLayout)myView.findViewById(R.id.layouttable);
         MainView=main;
     }
-
+    public SwapShiftModel(Activity a, SwipeRefreshLayout swipe,View main){
+        mActivity= a;
+        swipeRefreshLayout=swipe;
+        responseNum=0;
+        MainView=main;
+    }
+    public void setDatabase(DataBaseConnectionPresenter data){
+        dataBaseConnectionPresenter=data;
+    }
+    public void setView(View view){
+        myView=view;
+        tableLayout= (TableLayout)myView.findViewById(R.id.layouttable);
+    }
+    public void setClickable(boolean b){
+        clickable=b;
+    }
 
     /*
     can simplfy this some more
      */
-    public void next_init(){
+    public void setSwap(Long t1, Long t2){
+        query=dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("startTime").
+                startAt(t1).endAt(t2);
+    }
+    public void setShift(Long t1, Long t2,String employee){
+        query=dataBaseConnectionPresenter.getDbReference().child("Users").child(employee).child("Shifts").orderByChild("startTime").
+                startAt(t1).endAt(t2);
+    }
+    public void next_init(String employee){
         Long End = endTime+604800;
 
         setDateHeader(endTime,End);
-        final SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter,this,endTime,End);
+
+        if(employee==null) {
+            setSwap(endTime,End);
+        }else{
+            setShift(endTime,End,employee);
+        }
+
+        final SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter,this,query,endTime,End);
 
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
     }
-    public void init(){
+    public void init(String employee){
         Long start=(System.currentTimeMillis() / 1000);
         Long End = start+604800;
 
         setDateHeader(start,End);
 
-        SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter,this,start,End);
+        if(employee==null) {
+            setSwap(start,End);
+        }else{
+            setShift(start,End,employee);
+        }
 
+        SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter, this, query, start, End);
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
@@ -193,7 +235,7 @@ public class SwapShiftModel {
         textView.setBackgroundResource(R.drawable.shift_time_view);
         textView.setTextColor(Color.BLACK);
         textView.setClickable(true);
-        if(givenUpShift!=null) {
+        if(givenUpShift!=null && clickable) {
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -207,8 +249,23 @@ public class SwapShiftModel {
 
                     FragmentTransaction transaction = ((MainActivity) mActivity).getFragmentManager().beginTransaction();
                     transaction.setCustomAnimations(R.animator.enter_anim, R.animator.exit_anim, R.animator.enter_anim_back, R.animator.exit_anime_back);
-                    transaction.add(R.id.content_frame, confirm_givenUpShift).addToBackStack("Posts").commit();
+                    transaction.add(R.id.content_frame, confirm_givenUpShift).addToBackStack("Shifts").commit();
 
+                }
+            });
+        }
+        else if(givenUpShift!=null && !clickable){
+            textView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    GiveUpConfirmation confirmationDialog = new GiveUpConfirmation();
+
+                    Bundle bundle= new Bundle();
+                    bundle.putSerializable("Shift",givenUpShift);
+                    confirmationDialog.setArguments(bundle);
+                    confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
+
+                    return false;
                 }
             });
         }

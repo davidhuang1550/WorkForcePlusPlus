@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Manager;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Dialog.ConfirmationDialog;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.Notifications.SendNotification;
 import com.example.ddnbinc.workforceplusplus.R;
@@ -42,6 +43,9 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.swap_shift_confirm,container,false);
         dataBaseConnectionPresenter = ((MainActivity)mActivity).getDataBaseConnectionPresenter();
+
+
+        ((MainActivity)mActivity).hideFab();
         Bundle bundle = getArguments();
 
         description = (TextView)myView.findViewById(R.id.swap_shift_info);
@@ -83,12 +87,20 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
 
         MoveToPending();
         sendNotification.sendToken();
-        ((MainActivity) mActivity).onBackPressed();
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+
+        confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
 
     }
 
     public void MoveToPending(){
         dataBaseConnectionPresenter.getDbReference().child("PendingConfirm").child(givenUpShift.getShiftId()).setValue(0);
         dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").child(givenUpShift.getShiftId()).setValue(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ((MainActivity)mActivity).showFab();
     }
 }

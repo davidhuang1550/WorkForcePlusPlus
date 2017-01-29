@@ -3,13 +3,13 @@ package com.example.ddnbinc.workforceplusplus.AsyncTask;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShiftModel;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
+import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -17,34 +17,30 @@ import java.util.LinkedHashMap;
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftTask {
+public class SwapShiftTask extends StringFormater{
 
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private LinkedHashMap<String , ArrayList<GivenUpShift>> shifts;
     private Long time_now;
     private Long time_diff;
-    private SimpleDateFormat formatter;
+    private Query query;
+  //  private SimpleDateFormat formatter;
     private SwapShiftModel swapShiftModel;
 
-    public SwapShiftTask(DataBaseConnectionPresenter d, SwapShiftModel swap,Long start, Long end){
+    public SwapShiftTask(DataBaseConnectionPresenter d, SwapShiftModel swap, Query q,Long time_d,Long time_n){
+        super();
         dataBaseConnectionPresenter=d;
         shifts= new LinkedHashMap<>();
         swapShiftModel=swap;
-        time_now = start;
-        time_diff=end;
-        formatter = new SimpleDateFormat("EEEE");
-    }
+        query=q;
+        time_now=time_d;
+        time_diff=time_n;
 
-
-    public String setDays(Long time){
-
-        String date = formatter.format(new Date(time * 1000L));
-        return date;
+       // formatter = new SimpleDateFormat("EEEE");
     }
 
     public void Execute() {
-            dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("StartTime").
-                    startAt(time_now).endAt(time_diff).addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     try {
@@ -101,7 +97,6 @@ public class SwapShiftTask {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("HELLO");
                 }
             });
         }

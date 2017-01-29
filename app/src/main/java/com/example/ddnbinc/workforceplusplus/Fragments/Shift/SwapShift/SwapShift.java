@@ -16,10 +16,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.replaceable_shift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
@@ -62,6 +64,7 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
         shifts= new Stack<>();
         NextWeek.setOnClickListener(this);
 
+        ((MainActivity)mActivity).showFab();
         init();
 
 
@@ -102,9 +105,17 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
             replaceableShift.onDestroy();
             Bundle bundle =new Bundle();
             bundle.putLong("Start",replaceableShift.getEndTime());
+            setValues(bundle);
             init(bundle);
         }
     }
+    public void setValues(Bundle bundle){
+        SwapShiftPresenter swapShiftPresenter = new SwapShiftPresenter(mActivity,refreshLayout,MainView);
+
+        bundle.putSerializable("swap",(Serializable)swapShiftPresenter);
+        bundle.putBoolean("Clickable",true);
+    }
+
     /*
     if the user presses the next week button
      */
@@ -116,60 +127,22 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
 
     public void init(){
         replaceableShift = new replaceable_shift();
+        Bundle bundle = new Bundle();
+        setValues(bundle);
+
+        replaceableShift.setArguments(bundle);
+
+
         init_replaceable_shift(replaceableShift);
     }
     public void init_replaceable_shift(replaceable_shift replaceableShift){
         FragmentManager fragmentManager = mActivity.getFragmentManager();
         fragmentManager.beginTransaction().add(R.id.replaceable_frame,replaceableShift).commit();
     }
-    public static class replaceable_shift extends Fragment {
-        private Activity mActivity;
-        private View myView;
-        private DataBaseConnectionPresenter dataBaseConnectionPresenter;
-        private SwapShiftPresenter swapShiftPresenter;
 
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            mActivity=getActivity();
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            myView= inflater.inflate(R.layout.swap_shift_view_frame,container,false);
-            dataBaseConnectionPresenter= ((MainActivity)mActivity).getDataBaseConnectionPresenter();
-
-            swapShiftPresenter = new SwapShiftPresenter(mActivity,dataBaseConnectionPresenter,refreshLayout,myView,getMainView());
-
-            Bundle bundle = getArguments();
-            if(bundle!=null){
-                swapShiftPresenter.setTime(bundle.getLong("Start"));
-                swapShiftPresenter.next_week();
-            }
-            else{
-                swapShiftPresenter.init();
-            }
-
-
-            return myView;
-        }
-        public HashMap<String,ArrayList<GivenUpShift>> getShift(){
-            return swapShiftPresenter.getWeekShift();
-        }
-        public Long getEndTime(){
-            return swapShiftPresenter.getTime();
-        }
-
-        @Override
-        public void onDestroy() {
-            ViewGroup container = (ViewGroup)mActivity.findViewById(R.id.replaceable_frame);
-            container.removeAllViews();
-            super.onDestroy();
-        }
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ((MainActivity)mActivity).hideFab();
     }
-
-
 }

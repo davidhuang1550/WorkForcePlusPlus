@@ -1,10 +1,12 @@
 package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
+import java.io.Serializable;
+
 /**
  * Created by david on 2017-01-23.
  */
 
-public class Manager extends Employee{
+public class Manager extends Employee implements Serializable {
 
     public Manager(){
 
