@@ -24,7 +24,6 @@ public class SwapShiftTask extends StringFormater{
     private Long time_now;
     private Long time_diff;
     private Query query;
-  //  private SimpleDateFormat formatter;
     private SwapShiftModel swapShiftModel;
 
     public SwapShiftTask(DataBaseConnectionPresenter d, SwapShiftModel swap, Query q,Long time_d,Long time_n){
@@ -35,8 +34,6 @@ public class SwapShiftTask extends StringFormater{
         query=q;
         time_now=time_d;
         time_diff=time_n;
-
-       // formatter = new SimpleDateFormat("EEEE");
     }
 
     public void Execute() {
@@ -106,6 +103,7 @@ public class SwapShiftTask extends StringFormater{
             into.add(s);
         }
         shifts.put(setDays(time),into);
+
         temp.clear();
 
     }

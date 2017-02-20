@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.sax.RootElement;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
+import com.example.ddnbinc.workforceplusplus.Notifications.SendNotification;
 import com.example.ddnbinc.workforceplusplus.R;
 
 /**
@@ -64,8 +66,8 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
             TextView taker = (TextView) myView.findViewById(R.id.taker);
             TextView time = (TextView) myView.findViewById(R.id.time);
 
-            employees[0] = (Employee) b.getSerializable("Giver");
-            employees[1] = (Employee) b.getSerializable("Taker");
+            employees[0] = (Employee) b.getParcelable("Giver");
+            employees[1] = (Employee) b.getParcelable("Taker");
 
 
             giver.setText(employees[0].getEmail() + "Wants to give up a shift");
@@ -85,14 +87,26 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
         switch (view.getId()){
             case R.id.yes:
                 Accepted();
+                NotifyEmployees("Approved");
                 setDisplay();
                 break;
             case R.id.no:
                 MoveToGivenUpShifts();
+                NotifyEmployees("Denied");
+                setDisplay();
                 break;
         }
 
     }
+    public void NotifyEmployees(String Response){
+        SendNotification sendNotification_emp1 = new SendNotification(mActivity,givenUpShift.getShiftId(), Response,employees[0].getFcmToken());
+        sendNotification_emp1.sendToken();
+
+        SendNotification sendNotification_emp2 = new SendNotification(mActivity,givenUpShift.getShiftId(), Response,employees[1].getFcmToken());
+        sendNotification_emp2.sendToken();
+
+    }
+
     public void setDisplay(){
         /*
         This will be replaced with a list of posted shift later.

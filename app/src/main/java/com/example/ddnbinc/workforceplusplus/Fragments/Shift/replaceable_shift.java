@@ -44,19 +44,32 @@ public class replaceable_shift extends Fragment {
         if(bundle!=null){
             Long temp = bundle.getLong("Start");
             try {
-
-                swapShiftPresenter = (SwapShiftPresenter) bundle.getSerializable("swap");
-
+                HashMap<String,ArrayList<GivenUpShift>> hashMap = (HashMap<String,ArrayList<GivenUpShift>>)
+                        bundle.getSerializable("Previous");
+                swapShiftPresenter = (SwapShiftPresenter) bundle.getParcelable("swap");
                 swapShiftPresenter.setClickable(bundle.getBoolean("Clickable"));
                 String employeeid = bundle.getString("Employee");
                 swapShiftPresenter.setDatabase(dataBaseConnectionPresenter);
                 swapShiftPresenter.setView(myView);
-                if(temp!=0) {
+
+                if(hashMap!=null){
                     swapShiftPresenter.setTime(temp);
-                    swapShiftPresenter.next_week(employeeid);
-                }else{
+                    setTime(temp);
+                    swapShiftPresenter.setValues(hashMap);
+                } else{
+                    if(temp!=0) {
+                        swapShiftPresenter.setTime(temp);
+                        setTime(temp);
+                        swapShiftPresenter.next_week(employeeid);//view shift
+                    }else{
+                        Long time =(System.currentTimeMillis() / 1000);
+                        swapShiftPresenter.setTime(time);
+                        setTime(time);
                         swapShiftPresenter.init(employeeid);
+                    }
                 }
+
+
             }catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -64,6 +77,9 @@ public class replaceable_shift extends Fragment {
 
 
         return myView;
+    }
+    public void setTime(Long temp){
+        swapShiftPresenter.setDateHeader();
     }
 
     public HashMap<String,ArrayList<GivenUpShift>> getShift(){

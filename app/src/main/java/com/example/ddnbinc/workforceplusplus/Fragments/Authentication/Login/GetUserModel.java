@@ -2,12 +2,11 @@ package com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
-import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.Shift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
 import com.example.ddnbinc.workforceplusplus.R;
@@ -18,7 +17,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 
 /**
@@ -52,14 +50,17 @@ public class GetUserModel {
          */
         if(dataBaseConnectionPresenter.getFirebaseUser()!=null) {
             uId = dataBaseConnectionPresenter.getFirebaseUser().getUid().toString();
-            dataBaseConnectionPresenter.getDbReference().child("Users").child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+            dataBaseConnectionPresenter.getDbReference().child("Users").child(uId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.hasChild("privilleges")) {
                         employee = dataSnapshot.getValue(Manager.class);
+                        ((MainActivity)mActivity).showManagerView();
                     } else {
                         employee = dataSnapshot.getValue(TeamMember.class);
+                        ((MainActivity)mActivity).hideManagerView();
                     }
                     employee.setEmployeeId(dataSnapshot.getKey());
 
@@ -88,8 +89,13 @@ public class GetUserModel {
         fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
     }
     public void redirect_ViewShift(){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("type",false);
+        Shift shift = new Shift();
+        shift.setArguments(bundle);
+        ((MainActivity)mActivity).showStatusBar();
         FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, shift).commit();
     }
 
 

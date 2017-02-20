@@ -1,27 +1,23 @@
 package com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.BundleCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.AsyncTask.SwapShiftTask;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
-import com.example.ddnbinc.workforceplusplus.Dialog.ConfirmationDialog;
 import com.example.ddnbinc.workforceplusplus.Dialog.GiveUpConfirmation;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.Confirm_GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
+import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.firebase.database.Query;
 
 import java.io.Serializable;
@@ -36,7 +32,7 @@ import java.util.Map;
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftModel {
+public class SwapShiftModel extends StringFormater implements  Serializable{
     private Activity mActivity;
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -89,8 +85,6 @@ public class SwapShiftModel {
     public void next_init(String employee){
         Long End = endTime+604800;
 
-        setDateHeader(endTime,End);
-
         if(employee==null) {
             setSwap(endTime,End);
         }else{
@@ -104,30 +98,23 @@ public class SwapShiftModel {
         swapShiftTask.Execute();
     }
     public void init(String employee){
-        Long start=(System.currentTimeMillis() / 1000);
-        Long End = start+604800;
-
-        setDateHeader(start,End);
+        Long End = endTime+604800;
 
         if(employee==null) {
-            setSwap(start,End);
+            setSwap(endTime,End);
         }else{
-            setShift(start,End,employee);
+            setShift(endTime,End,employee);
         }
 
-        SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter, this, query, start, End);
+        SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter, this, query, endTime, End);
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
     }
-    public void setDateHeader(Long seconds_begin,Long seconds_end ){
+    public void setDateHeader(){
         TextView textView = (TextView)MainView.findViewById(R.id.work_week);
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM d, yyyy");
 
-        String dateString_begin = formatter.format(new Date(seconds_begin * 1000L));
-        String dateString_end = formatter.format(new Date(seconds_end * 1000L));
-
-        textView.setText(dateString_begin+"-"+dateString_end);
+        textView.setText(setHeader(endTime,endTime+604800));
     }
 
 
@@ -196,14 +183,14 @@ public class SwapShiftModel {
         }
         swipeRefreshLayout.setRefreshing(false);
     }
-    public String combine(Long hour, Long minutes, Long time){
+    /*public String combine(Long hour, Long minutes, Long time){
        String AMPM;
         if (time >= 43200) {
             AMPM = " PM";
             if(time>=46800)hour-=12;
         } else AMPM = " AM";
         return  hour.toString()+":"+minutes.toString()+AMPM;
-    }
+    }*/
 
     public TableRow Process(GivenUpShift givenUpShift){
         if(givenUpShift.getShiftId()!=null) {

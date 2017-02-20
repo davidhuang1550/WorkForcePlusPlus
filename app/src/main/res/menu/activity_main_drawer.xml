@@ -8,9 +8,9 @@
             android:icon="@drawable/profile"
             />
         <item
-            android:id="@+id/Barcode"
-            android:title="Barcode"
-            android:icon="@drawable/barcode"
+            android:id="@+id/Pending"
+            android:title="Pending Shifts"
+            android:icon="@drawable/bell"
             />
         <item
             android:id="@+id/Mail"

@@ -28,17 +28,6 @@
         android:layout_below="@+id/userPassword"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:text="Welcome to WorkForce++!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="30dp"
-        android:id="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,6 +50,18 @@
         android:layout_marginBottom="76dp"
         android:layout_above="@+id/signIn"
         android:layout_alignStart="@+id/userPassword" />
+
+    <TextView
+        android:text="Welcome to WorkForce++!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:id="@+id/textView2"
+        android:layout_marginTop="41dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

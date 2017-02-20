@@ -3,6 +3,7 @@ package com.example.ddnbinc.workforceplusplus.Notifications;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.example.ddnbinc.workforceplusplus.Classes.Shifts;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
@@ -11,6 +12,7 @@ import com.example.ddnbinc.workforceplusplus.Classes.Users.TeamMember;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.DecisionFragment;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ResultFragment;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
@@ -34,7 +36,9 @@ public class NotificationManager extends StringFormater{
     private Employee[] employee;
     private Query query;
     private ProgressBarPresenter progressBarPresenter;
+    private StringFormater stringFormater;
     private Shifts shifts;
+    private String temp;
 
     public NotificationManager(Activity activity, Bundle b, ProgressBarPresenter prog){
         super();
@@ -49,12 +53,13 @@ public class NotificationManager extends StringFormater{
 fetch all the nessasary data
  */
     public void setView(){
-        String temp = bundle.getString("Taker");
+        temp = bundle.getString("Taker");
       if(temp!=null) {
           // manager accepting tab
           setReciever();
           setShift();
       }else{
+          setShift();
           //normal team member
       }
 
@@ -77,7 +82,7 @@ fetch all the nessasary data
                     employee[u] = dataSnapshot.getValue(Manager.class);
                 }else{employee[u] = dataSnapshot.getValue(TeamMember.class);}
                 progressBarPresenter.Hide();
-                if(u==0)LoadView();
+                if(employee[0]!=null)LoadView();
 
             }
 
@@ -95,7 +100,8 @@ fetch all the nessasary data
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shifts = dataSnapshot.getValue(Shifts.class);
                 shifts.setShiftId(dataSnapshot.getKey());
-                setGiver(shifts.getEmployeeid());
+                if(temp!=null)setGiver(shifts.getEmployeeid());
+                else{LoadView();}
             }
 
             @Override
@@ -109,19 +115,27 @@ fetch all the nessasary data
      */
     public void LoadView(){
         try {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("Taker", (Serializable) employee[1]);
-            bundle.putSerializable("Giver", (Serializable) employee[0]);
-            bundle.putSerializable("Shift", (Serializable) shifts);
-            String time = Process(shifts.getStartTime(), shifts.getEndTime());
+            Bundle new_bundle = new Bundle();
+
+            stringFormater= new StringFormater();
+            String time = stringFormater.Process(shifts.getStartTime(), shifts.getEndTime());
 
             bundle.putString("Time", time);
-            DecisionFragment decisionFragment = new DecisionFragment();
-            decisionFragment.setArguments(bundle);
-
-
             FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
-            fragmentManager.beginTransaction().add(R.id.content_frame,decisionFragment).commit();
+            if(temp!=null) {
+                new_bundle.putSerializable("Shift", (Serializable) shifts);
+                new_bundle.putParcelable("Giver", (Parcelable) employee[0]);
+                new_bundle.putParcelable("Taker", (Parcelable) employee[1]);
+                DecisionFragment decisionFragment = new DecisionFragment();
+                decisionFragment.setArguments(new_bundle);
+                fragmentManager.beginTransaction().add(R.id.content_frame,decisionFragment).commit();
+            }else {
+                new_bundle.putString("Response", bundle.getString("Response"));
+                ResultFragment resultFragment = new ResultFragment();
+                resultFragment.setArguments(new_bundle);
+                fragmentManager.beginTransaction().add(R.id.content_frame,resultFragment).commit();
+            }
+
         }catch (RuntimeException e){
             e.printStackTrace();
         }

@@ -1,6 +1,8 @@
 package com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift;
 
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
@@ -15,8 +17,33 @@ import java.util.HashMap;
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftPresenter implements Serializable {
+public class SwapShiftPresenter implements Serializable,Parcelable {
     private SwapShiftModel swapShiftModel;
+
+    public SwapShiftPresenter(){
+
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags){
+    }
+
+    public static final Parcelable.Creator<SwapShiftPresenter> CREATOR
+            = new Parcelable.Creator<SwapShiftPresenter>() {
+        public SwapShiftPresenter createFromParcel(Parcel in) {
+            return new SwapShiftPresenter();
+        }
+
+        public SwapShiftPresenter[] newArray(int size) {
+            return new SwapShiftPresenter[size];
+        }
+    };
+
+    @Override
+    public int describeContents(){
+        return 0;
+    }
+
 
 
     public SwapShiftPresenter(Activity a, DataBaseConnectionPresenter data, SwipeRefreshLayout swipe,View v,View main){
@@ -53,4 +80,8 @@ public class SwapShiftPresenter implements Serializable {
     public void setClickable(boolean b){
         swapShiftModel.setClickable(b);
     }
+    public void setDateHeader(){
+        swapShiftModel.setDateHeader();
+    }
+
 }

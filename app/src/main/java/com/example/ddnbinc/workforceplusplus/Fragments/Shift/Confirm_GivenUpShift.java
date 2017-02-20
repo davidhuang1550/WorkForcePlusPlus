@@ -82,19 +82,36 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
 
     }
     public void sendNotification(){
-        SendNotification sendNotification = new SendNotification(mActivity,givenUpShift,((MainActivity)mActivity)
-                .getEmployee().getEmployeeId());
+        dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
+                .child("fcmToken").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String fcm = dataSnapshot.getValue(String.class);
 
-        MoveToPending();
-        sendNotification.sendToken();
-        ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+                SendNotification sendNotification = new SendNotification(mActivity,givenUpShift.getShiftId(),((MainActivity)mActivity)
+                        .getEmployee().getEmployeeId(),fcm);
 
-        confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
+                MoveToPending();
+                sendNotification.sendToken();
+                ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+
+                confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
     }
 
     public void MoveToPending(){
-        dataBaseConnectionPresenter.getDbReference().child("PendingConfirm").child(givenUpShift.getShiftId()).setValue(0);
+        dataBaseConnectionPresenter.getDbReference().child("PendingConfirm").
+                child(givenUpShift.getShiftId()).setValue(((MainActivity)mActivity).getEmployee().getEmployeeId());
         dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").child(givenUpShift.getShiftId()).setValue(null);
     }
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:text="Email"
+        android:textStyle="bold"
+        android:textSize="50px"
+        android:background="@drawable/backgrounddialog"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:id="@+id/textView" />
+
+    <Button
+        android:text="Send Email"
+        android:layout_width="match_parent"
+        android:background="@drawable/backgroundoptionsdialog"
+        android:layout_height="wrap_content"
+        android:id="@+id/SendEmail"
+        android:layout_weight="0.13" />
+
+    <Button
+        android:text="View Email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.13"
+        android:background="@drawable/backgroundoptionsdialog"
+        android:id="@+id/ViewEmail" />
+
+
+</LinearLayout>

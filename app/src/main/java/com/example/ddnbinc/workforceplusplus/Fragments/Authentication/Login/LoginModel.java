@@ -30,7 +30,8 @@ public class LoginModel {
     }
     protected void Login(){
         dataBaseConnectionPresenter = ((MainActivity)mActivity).getDataBaseConnectionPresenter();
-        dataBaseConnectionPresenter.getFireBaseAuth().signInWithEmailAndPassword(Email,Password).addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
+        dataBaseConnectionPresenter.getFireBaseAuth().signInWithEmailAndPassword(Email,Password).
+                addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(!(task.isSuccessful())){
@@ -38,7 +39,6 @@ public class LoginModel {
                     progressBarPresenter.Hide();
                 }
                 else{
-
                     dataBaseConnectionPresenter.setFirebaseUser();
 
                     GetUserPresenter getUserAsyncTask = new GetUserPresenter(dataBaseConnectionPresenter,mActivity,progressBarPresenter);

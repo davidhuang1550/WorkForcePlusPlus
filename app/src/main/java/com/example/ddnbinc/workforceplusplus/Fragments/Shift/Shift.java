@@ -1,9 +1,10 @@
-package com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift;
+package com.example.ddnbinc.workforceplusplus.Fragments.Shift;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.example.ddnbinc.workforceplusplus.Classes.Users.Manager;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShiftPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.replaceable_shift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
@@ -30,17 +33,18 @@ import java.util.Stack;
  * Created by david on 2017-01-23.
  */
 //604800
-public class SwapShift extends Fragment implements FragmentManager.OnBackStackChangedListener,
+public class Shift extends Fragment implements FragmentManager.OnBackStackChangedListener,
         View.OnClickListener{
 
     private Activity mActivity;
     private static View MainView;
     private static SwipeRefreshLayout refreshLayout;
     private replaceable_shift replaceableShift;
+    private boolean two_weeks;
     private Stack<HashMap<String,ArrayList<GivenUpShift>>> shifts;
     private Button NextWeek;
-
-
+    private Button PreviousWeek;
+    private Bundle ViewDeterminer;
 
 
     @Override
@@ -61,10 +65,15 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
         ((MainActivity)mActivity).setTitle("Swap Shifts");
         refreshLayout = (SwipeRefreshLayout)MainView.findViewById(R.id.swiperefresh);
         NextWeek = (Button)MainView.findViewById(R.id.week_button);
+        PreviousWeek=(Button)MainView.findViewById(R.id.previous_button);
         shifts= new Stack<>();
         NextWeek.setOnClickListener(this);
-
+        PreviousWeek.setOnClickListener(this);
+        PreviousWeek.setClickable(false);
         ((MainActivity)mActivity).showFab();
+        two_weeks=true;
+        ViewDeterminer = getArguments();
+
         init();
 
 
@@ -100,19 +109,52 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
 
     @Override
     public void onClick(View view) {
+
+        Bundle bundle =new Bundle();
         if(view.getId()==R.id.week_button){
+            //without this if, it will cause error with single previous,next
+            Long time = (two_weeks)?replaceableShift.getEndTime():replaceableShift.getEndTime()+604800;
+            two_weeks=true;
             shifts.add(replaceableShift.getShift());
-            replaceableShift.onDestroy();
-            Bundle bundle =new Bundle();
-            bundle.putLong("Start",replaceableShift.getEndTime());
-            setValues(bundle);
-            init(bundle);
+            defaults(time,bundle);
+            PreviousWeek.setBackgroundResource(R.drawable.swap_shift_button);
+            PreviousWeek.setClickable(true);
+        }else if(view.getId()==R.id.previous_button){
+            Long time = (two_weeks)?replaceableShift.getEndTime()-1209600:replaceableShift.getEndTime()-604800;
+            two_weeks=false;//
+            bundle.putSerializable("Previous",shifts.peek());
+            shifts.pop();
+            if(shifts.size()<1){
+                PreviousWeek.setBackgroundResource(R.drawable.swap_shift_gray_button);
+                PreviousWeek.setClickable(false);
+            }
+            defaults(time,bundle);
+
         }
+
     }
+    public void defaults(Long time,Bundle bundle){
+        bundle.putLong("Start",time);
+        replaceableShift.onDestroy();
+        setValues(bundle);
+        init(bundle);
+    }
+    /*
+    user shifts
+     */
+    public void setSelfValues(Bundle b){
+        ((MainActivity)mActivity).hideFab();
+        SwapShiftPresenter swapShiftPresenter = new SwapShiftPresenter(mActivity,refreshLayout,MainView);
+        b.putSerializable("swap",(Serializable)swapShiftPresenter);
+        b.putString("Employee",((MainActivity)mActivity).getEmployee().getEmployeeId());
+        b.putBoolean("Clickable",false);
+    }
+    /*
+    given up shifts
+     */
     public void setValues(Bundle bundle){
         SwapShiftPresenter swapShiftPresenter = new SwapShiftPresenter(mActivity,refreshLayout,MainView);
-
-        bundle.putSerializable("swap",(Serializable)swapShiftPresenter);
+        bundle.putParcelable("swap",(Parcelable) swapShiftPresenter);
         bundle.putBoolean("Clickable",true);
     }
 
@@ -128,7 +170,12 @@ public class SwapShift extends Fragment implements FragmentManager.OnBackStackCh
     public void init(){
         replaceableShift = new replaceable_shift();
         Bundle bundle = new Bundle();
-        setValues(bundle);
+
+        Boolean b = ViewDeterminer.getBoolean("type");
+        if(b){
+            setValues(bundle);
+        }else setSelfValues(bundle);
+
 
         replaceableShift.setArguments(bundle);
 

@@ -22,22 +22,29 @@ import java.util.Map;
 public class SendNotification {
 
     private Activity mActivity;
-    private GivenUpShift givenUpShift;
-    private String fcm="fgnZAtVfrgs:APA91bFurWhAxDEakW7UjtKL7Akp12m2hYDgCkEPcdiSweLPLu7AKobS7IxIxBVrusYMFK5rSrG6FqDVripH7Fwp7bL5S-Wy3i9KEaTqZpQBpsjUY1pShZRJVmKlbHzpnaCHwvaEuom9";
+    private String givenUpShift;
+
+    private String fcm;
+    private String Response;
+
     /*
+
     url that contains php code that act as a meditator which uses CURL to communicate to the firebase server
+
      */
+
     private String app_server_url ="https://ddnbinc.000webhostapp.com/fcm_insert.php";
-    private String EmployeeId;
-    public SendNotification(Activity activity, GivenUpShift given,String id){
+    private String EmployeeId; // this can be employee id or a response
+    public SendNotification(Activity activity, String shift,String id,String fm){
         mActivity=activity;
-        givenUpShift=given;
+        givenUpShift=shift;
         EmployeeId=id;
-
-
+        fcm=fm;
     }
 
+
     public void sendToken(){
+
         StringRequest stringRequest= new StringRequest(Request.Method.POST, app_server_url,
                 new Response.Listener<String>() {
                     @Override
@@ -60,7 +67,7 @@ public class SendNotification {
                 and body
                  */
                 params.put("fcm_token", fcm);
-                params.put("shift_id",givenUpShift.getShiftId());
+                params.put("shift_id",givenUpShift);
                 params.put("Taker",EmployeeId);
 
                 return params;

@@ -1,12 +1,16 @@
 package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by david on 2017-01-23.
  */
 
-public abstract class Employee implements Serializable{
+public abstract class Employee implements Serializable,Parcelable{
     private String FcmToken;
     private String StartDate;
     private String Email;
@@ -26,6 +30,7 @@ public abstract class Employee implements Serializable{
         EmployeeId=id;
         Privilleges=priv;
     }
+
     public String getEmail() {
         return Email;
     }
@@ -72,5 +77,6 @@ public abstract class Employee implements Serializable{
     public void setPrivilleges(String privilleges) {
         Privilleges = privilleges;
     }
+
 
 }

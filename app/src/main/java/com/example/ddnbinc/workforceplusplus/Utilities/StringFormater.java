@@ -41,6 +41,12 @@ public class StringFormater {
         } else AMPM = " AM";
         return  hour.toString()+":"+minutes.toString()+AMPM;
     }
+    public String setHeader(Long seconds_begin, Long seconds_end){
+        formatter = new SimpleDateFormat("MMMM d");
+        String dateString_begin = formatter.format(new Date(seconds_begin * 1000L));
+        String dateString_end = formatter.format(new Date(seconds_end * 1000L));
+        return dateString_begin+" - "+ dateString_end;
+    }
 
 
 

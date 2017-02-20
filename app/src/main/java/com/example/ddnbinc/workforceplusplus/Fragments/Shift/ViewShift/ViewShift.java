@@ -24,6 +24,7 @@ import java.util.Stack;
 
 /**
  * Created by david on 2017-01-23.
+ * CURRENTLY NOT IN USE
  */
 
 public class ViewShift extends Fragment implements View.OnClickListener{
@@ -34,6 +35,7 @@ public class ViewShift extends Fragment implements View.OnClickListener{
     private SwipeRefreshLayout refreshLayout;
     private Stack<HashMap<String,ArrayList<GivenUpShift>>> shifts;
     private Button NextWeek;
+    private Button PreviousWeek;
 
 
 
@@ -50,11 +52,12 @@ public class ViewShift extends Fragment implements View.OnClickListener{
         mActivity.setTitle("View Shift");
         refreshLayout = (SwipeRefreshLayout)myView.findViewById(R.id.swiperefresh);
         ((MainActivity)mActivity).showStatusBar();
-
+        PreviousWeek=(Button)myView.findViewById(R.id.previous_button);
         NextWeek = (Button)myView.findViewById(R.id.week_button);
         shifts= new Stack<>();
         NextWeek.setOnClickListener(this);
-
+        PreviousWeek.setOnClickListener(this);
+        PreviousWeek.setClickable(false);
         init();
 
 

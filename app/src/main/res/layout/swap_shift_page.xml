@@ -10,20 +10,28 @@
         android:background="@color/white"
         android:layout_above="@+id/replaceable_frame"
         android:id="@+id/layouttable"
-        android:stretchColumns="0">
+        android:stretchColumns="1">
 
             <TableRow>
+                <Button
+                    android:text="Previous"
+                    android:textColor="@color/white"
+                    android:background="@drawable/swap_shift_gray_button"
+                    android:id="@+id/previous_button"
+                    android:padding="10px"/>
                 <TextView
                     android:text="week 1"
                     android:background="@color/white"
                     android:id="@+id/work_week"
+                    android:textSize="15dp"
+                    android:textStyle="bold"
                     android:padding="30px"/>
                 <Button
                     android:text="Next Week"
                     android:textColor="@color/white"
                     android:background="@drawable/swap_shift_button"
                     android:id="@+id/week_button"
-                    android:padding="30px"/>
+                    android:padding="10px"/>
             </TableRow>
 
         </TableLayout>

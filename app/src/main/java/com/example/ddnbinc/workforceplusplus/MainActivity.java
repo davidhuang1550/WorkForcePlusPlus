@@ -2,11 +2,12 @@ package com.example.ddnbinc.workforceplusplus;
 
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.v4.app.ActivityCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,16 +18,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Dialog.EmailDialog;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.GetUserPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
-import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShift;
-import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift;
+import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.ProfileFragment;
+import com.example.ddnbinc.workforceplusplus.Fragments.Shift.Shift;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
+import com.example.ddnbinc.workforceplusplus.Manager.PendingShifts;
 import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
 import com.example.ddnbinc.workforceplusplus.Utilities.FabPresenter;
+import com.example.ddnbinc.workforceplusplus.Utilities.ImageUploader;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener {
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private Employee employee;
     private FabPresenter fabPresenter;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +45,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-       // FirebaseAuth.getInstance().signOut();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -54,7 +55,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-       FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
+        menu=navigationView.getMenu();
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
         fabPresenter = new FabPresenter(floatingActionButton,this);
 
         fabPresenter.Hide();
@@ -62,18 +65,26 @@ public class MainActivity extends AppCompatActivity
         dataBaseConnectionPresenter = new DataBaseConnectionPresenter();
 
         Bundle bundle = getIntent().getExtras();
+
+        System.out.println(System.currentTimeMillis()/1000);
+
         if(bundle!=null){
             /*
             called when theres a notification
              */
+            Bundle bundle1= bundle.getBundle("Info");
+            if(bundle1!=null) {
+                ProgressBarPresenter progressBarPresenter = new ProgressBarPresenter(this, "Loading");
+                progressBarPresenter.Show();
 
-            ProgressBarPresenter progressBarPresenter = new ProgressBarPresenter(this,"Loading");
-            progressBarPresenter.Show();
-
-            NotificationManager notificationManager = new NotificationManager(this,bundle.getBundle("Info"),progressBarPresenter);
-            GetUserPresenter getUserPresenter= new GetUserPresenter(dataBaseConnectionPresenter,this,progressBarPresenter);
-            getUserPresenter.setFlag(notificationManager);
-            getUserPresenter.getUser();
+                NotificationManager notificationManager = new NotificationManager(this, bundle1, progressBarPresenter);
+                GetUserPresenter getUserPresenter = new GetUserPresenter(dataBaseConnectionPresenter, this, progressBarPresenter);
+                getUserPresenter.setFlag(notificationManager);
+                getUserPresenter.getUser();
+            }else{
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
+            }
 
         }
         else{
@@ -145,6 +156,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void hideManagerView(){
+        menu.findItem(R.id.Pending).setVisible(false);// set logout and login respectively
+    }
+    public void showManagerView(){
+        menu.findItem(R.id.Pending).setVisible(true);// set logout and login respectively
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -157,26 +175,55 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode==RESULT_OK) {
+            if (requestCode == 1) {
+                ImageUploader imageUploader = new ImageUploader(dataBaseConnectionPresenter,employee.getEmployeeId(),this);
+                String path= imageUploader.getPath(this,data.getData());
+                imageUploader.setFilePath(path);
+                imageUploader.UploadImage();
+            }
+        }
+    }
+
+    public boolean checkReadExternalPermission(){
+        String permission = "android.permission.READ_EXTERNAL_STORAGE"; // get permissions
+        int res= this.checkCallingOrSelfPermission(permission);
+        return (res== PackageManager.PERMISSION_GRANTED);
+    }
+    public void requestForSpecificPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         FragmentManager fragmentManager = getFragmentManager();
         int id = item.getItemId();
+        Bundle bundle = new Bundle();
 
         if (id == R.id.Profile) {
-            // Handle the camera action
-        } else if (id == R.id.Barcode) {
-
+            fragmentManager .beginTransaction().replace(R.id.content_frame,new ProfileFragment(),"Shift").commit();
         } else if (id == R.id.Mail) {
-
+            EmailDialog optionsDialog = new EmailDialog();
+            optionsDialog.show(getFragmentManager(),"options Dialog");
         } else if (id == R.id.SwapShift) {
-            fragmentManager .beginTransaction().replace(R.id.content_frame,new SwapShift(),"SwapShift").commit();
+            bundle.putBoolean("type",true);
+            Shift shift = new Shift();
+            shift.setArguments(bundle);
+            fragmentManager .beginTransaction().replace(R.id.content_frame, shift,"Shift").commit();
         } else if (id == R.id.ViewShift) {
-            fragmentManager .beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
-
+            bundle.putBoolean("type",false);
+            Shift shift = new Shift();
+            shift.setArguments(bundle);
+            fragmentManager .beginTransaction().replace(R.id.content_frame, shift).commit();
         } else if (id == R.id.Logout) {
-
+            FirebaseAuth.getInstance().signOut();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,new Login()).commit();
+        }else if (id == R.id.Pending) {
+            fragmentManager .beginTransaction().replace(R.id.content_frame,new PendingShifts(),"PendingShift").commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

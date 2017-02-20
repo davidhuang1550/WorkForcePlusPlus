@@ -21,6 +21,7 @@ public class DataBaseConnectionPresenter {
     }
     public void setFirebaseUser(){
         firebaseUser = authentication.getCurrentUser();
+
     }
     public void setFirebaseUser(FirebaseUser fbu){
         firebaseUser = fbu;

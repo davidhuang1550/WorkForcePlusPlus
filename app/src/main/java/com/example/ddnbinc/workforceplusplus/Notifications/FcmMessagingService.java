@@ -34,14 +34,22 @@ public class FcmMessagingService extends FirebaseMessagingService {
         Intent intent = new Intent(this,MainActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("ShiftId",shift);
-        bundle.putString("Taker",users);
+        String title;
+        if(users.equals("Denied")||users.equals("Approved")){
+            bundle.putString("Response",users);
+            title = "Swap Shift Response";
+        }
+        else {
+            bundle.putString("Taker", users);
+            title="Swap Shift Pending";
+        }
 
         intent.putExtra("Info",bundle);
 
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
-        notificationBuilder.setContentTitle("Swap Shift Pending");
+        notificationBuilder.setContentTitle(title);
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setAutoCancel(true);
         notificationBuilder.setOnlyAlertOnce(true);

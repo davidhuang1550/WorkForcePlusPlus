@@ -44,7 +44,4 @@ public class GivenUpShift implements Serializable {
         ShiftId = shiftId;
     }
 
-
-
-
 }

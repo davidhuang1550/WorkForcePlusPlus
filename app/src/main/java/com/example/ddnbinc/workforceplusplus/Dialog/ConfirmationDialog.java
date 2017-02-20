@@ -40,7 +40,7 @@ public class ConfirmationDialog extends DialogFragment {
         alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(bundle==null) {
+                if(bundle!=null) {
                         ((MainActivity) mActivity).onBackPressed();
                 }
             }
