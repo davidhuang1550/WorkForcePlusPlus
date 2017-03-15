@@ -30,6 +30,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/darkOrange"
-        android:src="@drawable/giveup" />
+        android:src="@drawable/ic_menu_send" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -29,24 +29,28 @@ public class LoginModel {
         progressBarPresenter=prog;
     }
     protected void Login(){
-        dataBaseConnectionPresenter = ((MainActivity)mActivity).getDataBaseConnectionPresenter();
-        dataBaseConnectionPresenter.getFireBaseAuth().signInWithEmailAndPassword(Email,Password).
-                addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(!(task.isSuccessful())){
-                    Toast.makeText(mActivity,"authentication failed",Toast.LENGTH_SHORT).show();
-                    progressBarPresenter.Hide();
-                }
-                else{
-                    dataBaseConnectionPresenter.setFirebaseUser();
+        try {
+            dataBaseConnectionPresenter = ((MainActivity) mActivity).getDataBaseConnectionPresenter();
+            dataBaseConnectionPresenter.getFireBaseAuth().signInWithEmailAndPassword(Email, Password).
+                    addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!(task.isSuccessful())) {
+                                Toast.makeText(mActivity, "authentication failed", Toast.LENGTH_SHORT).show();
+                                progressBarPresenter.Hide();
+                            } else {
+                                dataBaseConnectionPresenter.setFirebaseUser();
 
-                    GetUserPresenter getUserAsyncTask = new GetUserPresenter(dataBaseConnectionPresenter,mActivity,progressBarPresenter);
-                    getUserAsyncTask.getUser();
+                                GetUserPresenter getUserAsyncTask = new GetUserPresenter(dataBaseConnectionPresenter, mActivity, progressBarPresenter);
+                                getUserAsyncTask.getUser();
 
-                }
-            }
-        });
+                            }
+                        }
+                    });
+        }catch (NullPointerException e){
+            progressBarPresenter.Hide();
+            e.printStackTrace();
+        }
     }
 }
 

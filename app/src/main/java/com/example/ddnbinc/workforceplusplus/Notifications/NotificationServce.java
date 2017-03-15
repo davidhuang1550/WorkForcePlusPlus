@@ -15,7 +15,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 
 
-public class notificationServce extends FirebaseInstanceIdService {
+public class NotificationServce extends FirebaseInstanceIdService {
 
     @Override
     public void onTokenRefresh() {

@@ -3,7 +3,10 @@ package com.example.ddnbinc.workforceplusplus.Classes.Users;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.ddnbinc.workforceplusplus.Classes.Notification;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by david on 2017-01-23.
@@ -14,9 +17,30 @@ public class Manager extends Employee implements Serializable,Parcelable {
     public Manager(){
 
     }
-    public Manager(String f, String s, String e,String p,String id,String priv){
-       super(f,s,e,p,id,priv);
+    /*
+    * @param f = FCM TOKEN
+    * @param s = Start Date
+    * @param e = Email
+    * @param p = Password
+    * @param id = Employee Id
+    * @param priv = Privilleges
+    * @param not = Notifications
+    * @param n = Name
+    */
+
+    public Manager(String f, String s, String e, String p, String id, String priv, ArrayList<Notification> not,String n){
+       super(f,s,e,p,id,priv,not,n);
     }
+
+    public ArrayList<Notification> getNotification() {
+        return super.getNotification();
+    }
+
+    public void setNotification(ArrayList<Notification> notification) {
+        super.setNotification(notification);
+    }
+
+    private ArrayList<Notification> notification;
 
     public String getEmail() {
         return super.getEmail();
@@ -59,6 +83,14 @@ public class Manager extends Employee implements Serializable,Parcelable {
     public String getPrivilleges() {
         return super.getPrivilleges();
     }
+    public String getName() {
+        return super.getName();
+    }
+
+    public void setName(String name) {
+        super.setName(name);
+    }
+
 
     public void setPrivilleges(String privilleges) {
         super.setPrivilleges(privilleges);
@@ -72,6 +104,7 @@ public class Manager extends Employee implements Serializable,Parcelable {
         setEmployeeId(dest.readString());
         setPassword(dest.readString());
         setPrivilleges(dest.readString());
+        setName(dest.readString());
 
     }
 
@@ -82,6 +115,8 @@ public class Manager extends Employee implements Serializable,Parcelable {
         setEmployeeId(in.readString());
         setPassword(in.readString());
         setPrivilleges(in.readString());
+        setName(in.readString());
+
     }
 
     public static final Creator<Manager> CREATOR = new Creator<Manager>() {

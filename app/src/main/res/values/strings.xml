@@ -6,4 +6,7 @@
     <string name="FCM_PREF">com.example.ddnbinc.workforceplusplus.fcm_pref</string>
     <string name="FCM_TOKEN">com.example.ddnbinc.workforceplusplus.fcm_token</string>
     <string name="action_settings">Settings</string>
+    <string name="PASSWORD">Password</string>
+    <string name="USERNAME">Username</string>
+    <string name="CREDENTIALS">Credentials</string>
 </resources>

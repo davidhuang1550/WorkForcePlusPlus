@@ -38,10 +38,11 @@ public class replaceable_shift extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView= inflater.inflate(R.layout.swap_shift_view_frame,container,false);
+
         dataBaseConnectionPresenter= ((MainActivity)mActivity).getDataBaseConnectionPresenter();
 
         Bundle bundle = getArguments();
-        if(bundle!=null){
+        if(bundle!=null &&dataBaseConnectionPresenter!=null){
             Long temp = bundle.getLong("Start");
             try {
                 HashMap<String,ArrayList<GivenUpShift>> hashMap = (HashMap<String,ArrayList<GivenUpShift>>)
@@ -92,7 +93,7 @@ public class replaceable_shift extends Fragment {
     @Override
     public void onDestroy() {
         ViewGroup container = (ViewGroup)mActivity.findViewById(R.id.replaceable_frame);
-        container.removeAllViews();
+        if(container!=null)container.removeAllViews();
         super.onDestroy();
     }
 

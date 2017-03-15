@@ -5,8 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,20 +21,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.ddnbinc.workforceplusplus.ChatRoom.ChatRoom;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialog.EmailDialog;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.GetUserPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login.Login;
-import com.example.ddnbinc.workforceplusplus.Fragments.Authentication.ProfileFragment;
+import com.example.ddnbinc.workforceplusplus.Fragments.ProfileFragment;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.Shift;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.Manager.PendingShifts;
 import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
+import com.example.ddnbinc.workforceplusplus.Notifications.NotificationTab;
 import com.example.ddnbinc.workforceplusplus.Utilities.FabPresenter;
 import com.example.ddnbinc.workforceplusplus.Utilities.ImageUploader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener {
@@ -38,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private Employee employee;
     private FabPresenter fabPresenter;
     private Menu menu;
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo activeNetworkInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         fabPresenter.Hide();
 
-        dataBaseConnectionPresenter = new DataBaseConnectionPresenter();
+        dataBaseConnectionPresenter = DataBaseConnectionPresenter.getInstance();
 
         Bundle bundle = getIntent().getExtras();
 
@@ -104,18 +121,51 @@ public class MainActivity extends AppCompatActivity
         }
     }
     public DataBaseConnectionPresenter getDataBaseConnectionPresenter(){
-        return dataBaseConnectionPresenter;
+
+        if (isNetworkAvailable()) return dataBaseConnectionPresenter;
+
+        Snackbar.make(getCurrentFocus(), "No Internet Connection", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+        return null;
     }
 
     public void setUserFcmToken(){
         SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.FCM_PREF), Context.MODE_PRIVATE);
         String token =sharedPreferences.getString(getString(R.string.FCM_TOKEN),"");
+
         if(!token.equals("")) dataBaseConnectionPresenter.getDbReference().child("Users").child(dataBaseConnectionPresenter.getUID()).
                 child("fcmToken").setValue(token);
+
+        //  Remove the preference token or else we would just keep calling this function every time we
+        // log into the applcation
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(getString(R.string.FCM_PREF));
+        editor.commit();
     }
 
     public void setEmployee(Employee e){
         employee=e;
+        final ImageView imageView = (ImageView) findViewById(R.id.profileImage);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/Images/" +employee.getEmployeeId());
+        storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                try {
+                    Picasso.with(getApplicationContext()).load(task.getResult()).fit().into(imageView);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Failed to download image check Internet Connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
     public void showFab(){
      fabPresenter.Show();
@@ -142,6 +192,15 @@ public class MainActivity extends AppCompatActivity
     }
     public void showStatusBar(){
         getSupportActionBar().show();
+    }
+
+    public boolean isNetworkAvailable() {
+        if(connectivityManager==null){
+            connectivityManager
+                    = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        }
+        activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
@@ -219,11 +278,15 @@ public class MainActivity extends AppCompatActivity
             Shift shift = new Shift();
             shift.setArguments(bundle);
             fragmentManager .beginTransaction().replace(R.id.content_frame, shift).commit();
+        } else if(id == R.id.Notifications){
+            fragmentManager .beginTransaction().replace(R.id.content_frame,new NotificationTab()).commit();
         } else if (id == R.id.Logout) {
             FirebaseAuth.getInstance().signOut();
             fragmentManager.beginTransaction().replace(R.id.content_frame,new Login()).commit();
         }else if (id == R.id.Pending) {
             fragmentManager .beginTransaction().replace(R.id.content_frame,new PendingShifts(),"PendingShift").commit();
+        }else if (id == R.id.Chat) {
+            fragmentManager .beginTransaction().replace(R.id.content_frame,new ChatRoom()).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

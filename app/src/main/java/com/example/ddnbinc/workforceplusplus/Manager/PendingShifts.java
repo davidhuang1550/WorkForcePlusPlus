@@ -40,6 +40,7 @@ public class PendingShifts extends Fragment implements FragmentManager.OnBackSta
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.pending_shifts,container,false);
+        ((MainActivity)mActivity).setTitle("Pending Shifts");
         ListView listView = (ListView)myView.findViewById(R.id.listview);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)myView.findViewById(R.id.swiperefresh);
         pendingShiftsPresenter = new PendingShiftsPresenter(mActivity,listView,swipeRefreshLayout,myView);

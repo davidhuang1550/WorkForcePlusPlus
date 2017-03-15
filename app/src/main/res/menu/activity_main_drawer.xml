@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single" android:id="@+id/firstnav">
         <item
             android:id="@+id/Profile"
             android:title="Profile"
             android:icon="@drawable/profile"
             />
+    </group>
+    <group android:checkableBehavior="single" android:id="@+id/secondnav">
         <item
             android:id="@+id/Pending"
             android:title="Pending Shifts"
             android:icon="@drawable/bell"
             />
         <item
+            android:id="@+id/Notifications"
+            android:title="Notifications"
+            android:icon="@drawable/bell"
+            />
+    </group>
+        <item
             android:id="@+id/Mail"
             android:title="Mail"
             android:icon="@drawable/mail"
             />
+        <item
+            android:id="@+id/Chat"
+            android:title="Chat Room"
+            android:icon="@drawable/mail"/>
+    <group android:checkableBehavior="single" android:id="@+id/thirdnav">
         <item
             android:id="@+id/SwapShift"
             android:title="Swap Shifts"
@@ -27,24 +40,14 @@
             android:title="View Shift"
             android:icon="@drawable/calendar"
             />
+    </group>
         <item
             android:id="@+id/Logout"
             android:title="Log Out"
             android:icon="@drawable/logout"
             />
-    </group>
 
-    <!--<item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>-->
+
+
 
 </menu>

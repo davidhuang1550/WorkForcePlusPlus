@@ -1,4 +1,4 @@
-package com.example.ddnbinc.workforceplusplus.Fragments.Authentication;
+package com.example.ddnbinc.workforceplusplus.Fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -71,7 +71,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(mActivity, "Failed to download image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "Failed to download image check Internet Connection", Toast.LENGTH_SHORT).show();
                 }
             });
 

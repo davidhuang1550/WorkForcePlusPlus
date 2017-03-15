@@ -13,8 +13,9 @@ public class DataBaseConnectionPresenter {
     private DatabaseReference dbReference;
     private FirebaseAuth authentication;
     private FirebaseUser firebaseUser;
+    private static DataBaseConnectionPresenter dataBaseConnectionPresenter;
 
-    public DataBaseConnectionPresenter(){
+    private DataBaseConnectionPresenter(){
         authentication= FirebaseAuth.getInstance(); // get instance of my firebase console
         dbReference = FirebaseDatabase.getInstance().getReference(); // access to database
         firebaseUser = authentication.getCurrentUser();
@@ -23,6 +24,13 @@ public class DataBaseConnectionPresenter {
         firebaseUser = authentication.getCurrentUser();
 
     }
+    public static synchronized  DataBaseConnectionPresenter getInstance(){
+        if(dataBaseConnectionPresenter==null){
+            dataBaseConnectionPresenter = new DataBaseConnectionPresenter();
+        }
+        return dataBaseConnectionPresenter;
+    }
+
     public void setFirebaseUser(FirebaseUser fbu){
         firebaseUser = fbu;
     }

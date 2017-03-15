@@ -44,22 +44,27 @@ public class PendingShiftsModel{
     }
     public void fetchShifts(){
         swipeRefreshLayout.setRefreshing(true);
-        dataBaseConnectionPresenter.getDbReference().child("PendingConfirm").
-                addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot data : dataSnapshot.getChildren()){
-                    Shifts.add(data.getKey());
-                    ShiftsTaker.add(data.getValue(String.class));
-                }
-                init();
-            }
+        try {
+            dataBaseConnectionPresenter.getDbReference().child("PendingConfirm").
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                Shifts.add(data.getKey());
+                                ShiftsTaker.add(data.getValue(String.class));
+                            }
+                            init();
+                        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                        }
+                    });
+        }catch (NullPointerException e){
+            swipeRefreshLayout.setRefreshing(false);
+            e.printStackTrace();
+        }
     }
     public void init(){
         PendingAdapter pendingAdapter = new PendingAdapter(mActivity,Shifts,ShiftsTaker,mView);

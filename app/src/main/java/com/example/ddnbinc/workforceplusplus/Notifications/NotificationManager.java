@@ -54,14 +54,16 @@ fetch all the nessasary data
  */
     public void setView(){
         temp = bundle.getString("Taker");
-      if(temp!=null) {
-          // manager accepting tab
-          setReciever();
-          setShift();
-      }else{
-          setShift();
-          //normal team member
-      }
+        if(dataBaseConnectionPresenter!=null) {
+            if (temp != null) {
+                // manager accepting tab
+                setReciever();
+                setShift();
+            } else {
+                setShift();
+                //normal team member
+            }
+        }
 
     }
     public void setGiver(String id){

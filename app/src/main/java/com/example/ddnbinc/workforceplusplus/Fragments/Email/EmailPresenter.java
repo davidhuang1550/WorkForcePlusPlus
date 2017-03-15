@@ -10,12 +10,19 @@ import android.widget.ListView;
 
 public class EmailPresenter {
     private EmailModel emailModel;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
-    public EmailPresenter(Activity activity, ListView listView, SwipeRefreshLayout swipeRefreshLayout){
-        emailModel = new EmailModel(activity,listView,swipeRefreshLayout);
+    public EmailPresenter(Activity activity, ListView listView, SwipeRefreshLayout swipe){
+        swipeRefreshLayout = swipe;
+        emailModel = new EmailModel(activity,listView,swipe);
     }
     public void GetEmail(){
-        emailModel.getEmailList();
+        try {
+            emailModel.getEmailList();
+        }catch (NullPointerException e){
+            swipeRefreshLayout.setRefreshing(false);
+            e.printStackTrace();
+        }
     }
 
 }

@@ -50,19 +50,23 @@ public class ShiftInfoModel extends StringFormater{
     }
 
     public void getShiftInfo(){
-        dataBaseConnectionPresenter.getDbReference().child("Shifts").child(ShiftInfo)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                shifts = dataSnapshot.getValue(Shifts.class);
-                getusers();
-            }
+        try {
+            dataBaseConnectionPresenter.getDbReference().child("Shifts").child(ShiftInfo)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            shifts = dataSnapshot.getValue(Shifts.class);
+                            getusers();
+                        }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                        }
+                    });
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     public void getusers(){
@@ -124,11 +128,7 @@ public class ShiftInfoModel extends StringFormater{
     }
     public void setView(View view){
         getShiftInfo();
-        //Bundle bundle =new Bundle();
 
-
-
-       // return bundle;
     }
 
     public void View(){

@@ -31,6 +31,7 @@ import java.util.Stack;
 
 /**
  * Created by david on 2017-01-23.
+ * Controls The View for both self shifts as well as swap shifts.
  */
 //604800
 public class Shift extends Fragment implements FragmentManager.OnBackStackChangedListener,
@@ -133,6 +134,9 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
         }
 
     }
+    /*
+    both functions call this.
+     */
     public void defaults(Long time,Bundle bundle){
         bundle.putLong("Start",time);
         replaceableShift.onDestroy();
@@ -166,7 +170,9 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
         replaceableShift.setArguments(bundle);
         init_replaceable_shift(replaceableShift);
     }
-
+    /*
+    initial
+    */
     public void init(){
         replaceableShift = new replaceable_shift();
         Bundle bundle = new Bundle();

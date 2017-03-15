@@ -4,39 +4,20 @@
 
     android:layout_width="match_parent"
     android:background="@color/white"
+    android:backgroundTint="@color/backgroundblue"
     android:layout_height="match_parent">
 
-    <Button
+    <TextView
+        android:text="WorkForce++"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dont have an account?"
-        android:id="@+id/signup"
+        android:gravity="center"
+        android:textStyle="italic"
         android:textColor="@color/white"
-        android:background="@drawable/signup_button"
-
-        android:layout_marginTop="45dp"
-        android:layout_below="@+id/signIn"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign IN"
-        android:id="@+id/signIn"
-        android:layout_marginTop="44dp"
-        android:background="@drawable/login_button"
-        android:layout_below="@+id/userPassword"
-        android:layout_centerHorizontal="true" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:background="@drawable/login_borders"
-        android:id="@+id/userPassword"
-        android:hint="Password"
-        android:layout_centerVertical="true"
+        android:textSize="40dp"
+        android:id="@+id/textView2"
+        android:layout_marginTop="41dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <EditText
@@ -44,24 +25,56 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:hint="UserName"
-        android:background="@drawable/login_borders"
-        android:ems="10"
+        android:ems="15"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:background="@drawable/one_sided_border_login"
         android:id="@+id/userName"
-        android:layout_marginBottom="76dp"
-        android:layout_above="@+id/signIn"
-        android:layout_alignStart="@+id/userPassword" />
+        android:layout_marginTop="85dp"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:text="Welcome to WorkForce++!"
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:background="@drawable/one_sided_border_login"
+        android:id="@+id/userPassword"
+        android:hint="Password"
+        android:layout_alignTop="@+id/userName"
+        android:layout_marginTop="90dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:layout_alignStart="@+id/userName"
+        android:layout_alignEnd="@+id/userName" />
+
+    <CheckBox
+        android:text="Remember me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:id="@+id/remember_me"
+        android:textColor="@color/white"
+        android:buttonTint="@color/white"
         android:textStyle="bold"
-        android:textSize="30dp"
-        android:id="@+id/textView2"
-        android:layout_marginTop="41dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/userPassword"
+        android:layout_alignEnd="@+id/userPassword"
+        android:layout_marginEnd="17dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign IN"
+        android:id="@+id/signIn"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:background="@drawable/login_button"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#0066ff"
+        android:layout_below="@+id/remember_me"
+        android:layout_alignStart="@+id/userPassword"
+        android:layout_alignEnd="@+id/userPassword" />
 
 
 </RelativeLayout>

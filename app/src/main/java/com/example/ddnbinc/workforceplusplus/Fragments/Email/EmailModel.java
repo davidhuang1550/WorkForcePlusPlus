@@ -45,7 +45,6 @@ public class EmailModel {
 
             }
         });
-
     }
     public void setView(){
         EmailAdapter emailAdapter = new EmailAdapter(Emails,mActivity);

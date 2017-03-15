@@ -33,6 +33,12 @@ import java.util.Map;
  */
 
 public class SwapShiftModel extends StringFormater implements  Serializable{
+
+    private final static int oneDay =86400;
+    private final static int oneWeek=604800;
+    private final static int oneMinute=3600;
+    private final static int oneSecond=60;
+
     private Activity mActivity;
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -83,7 +89,7 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
                 startAt(t1).endAt(t2);
     }
     public void next_init(String employee){
-        Long End = endTime+604800;
+        Long End = endTime+oneWeek;
 
         if(employee==null) {
             setSwap(endTime,End);
@@ -91,14 +97,14 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
             setShift(endTime,End,employee);
         }
 
-        final SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter,this,query,endTime,End);
+        final SwapShiftTask swapShiftTask = new SwapShiftTask(this,query,endTime,End);
 
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
     }
     public void init(String employee){
-        Long End = endTime+604800;
+        Long End = endTime+oneWeek;
 
         if(employee==null) {
             setSwap(endTime,End);
@@ -106,7 +112,7 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
             setShift(endTime,End,employee);
         }
 
-        SwapShiftTask swapShiftTask = new SwapShiftTask(dataBaseConnectionPresenter, this, query, endTime, End);
+        SwapShiftTask swapShiftTask = new SwapShiftTask(this, query, endTime, End);
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
@@ -114,7 +120,7 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
     public void setDateHeader(){
         TextView textView = (TextView)MainView.findViewById(R.id.work_week);
 
-        textView.setText(setHeader(endTime,endTime+604800));
+        textView.setText(setHeader(endTime,endTime+oneWeek));
     }
 
 
@@ -183,24 +189,12 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
         }
         swipeRefreshLayout.setRefreshing(false);
     }
-    /*public String combine(Long hour, Long minutes, Long time){
-       String AMPM;
-        if (time >= 43200) {
-            AMPM = " PM";
-            if(time>=46800)hour-=12;
-        } else AMPM = " AM";
-        return  hour.toString()+":"+minutes.toString()+AMPM;
-    }*/
 
     public TableRow Process(GivenUpShift givenUpShift){
         if(givenUpShift.getShiftId()!=null) {
-            Long Start_time = (givenUpShift.getStartTime() % 86400);
-            Long End_time = (givenUpShift.getEndTime() % 86400);
 
-            String start = combine(Start_time / 3600,(Start_time % 3600) / 60,Start_time);
-            String end = combine(End_time / 3600,(End_time % 3600) / 60,End_time);
-
-            TableRow tableRow = AddRow(start, end,givenUpShift);
+            TableRow tableRow = AddRow(ConvertTimeString(givenUpShift.getStartTime()),
+                    ConvertTimeString(givenUpShift.getEndTime()),givenUpShift);
             return tableRow;
         }else{
             return AddRow("No","Shifts",null);
@@ -257,6 +251,8 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
             });
         }
         TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT,1f);
+        params.setMargins(15,5,15,5);
+
         tr.addView(textView,params);
 
         return tr;

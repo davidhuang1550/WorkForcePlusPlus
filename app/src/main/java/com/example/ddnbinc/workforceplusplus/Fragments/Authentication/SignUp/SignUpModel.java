@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.example.ddnbinc.workforceplusplus.Classes.Notification;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.TeamMember;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
@@ -19,6 +20,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -42,28 +44,32 @@ public class SignUpModel {
     }
 
     protected void createNewAccount(){
-        dataBaseConnectionPresenter = ((MainActivity)mActivity).getDataBaseConnectionPresenter();
-        dataBaseConnectionPresenter.getFireBaseAuth().createUserWithEmailAndPassword(Email,Password).addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                progressBarPresenter.Hide();
-                if(!(task.isSuccessful())){
-                    Toast.makeText(mActivity,"Something went wrong",Toast.LENGTH_SHORT).show();
-                    System.out.println(task.getException().toString());
+        try {
+            dataBaseConnectionPresenter = ((MainActivity) mActivity).getDataBaseConnectionPresenter();
+            dataBaseConnectionPresenter.getFireBaseAuth().createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    progressBarPresenter.Hide();
+                    if (!(task.isSuccessful())) {
+                        Toast.makeText(mActivity, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        System.out.println(task.getException().toString());
+                    } else {
+                        Date cDate = new Date();
+                        String fDate = new SimpleDateFormat("yyyy-MM-dd").format(cDate);
+
+                        Employee manager = new TeamMember(FirebaseInstanceId.getInstance().getToken(), fDate, Email, Password, task.getResult().getUser().getUid(), null,new ArrayList<Notification>(),"");
+
+                        dataBaseConnectionPresenter.getDbReference().child("Users").child(task.getResult().getUser().getUid()).setValue(manager);
+
+                        FragmentManager fragmentManager = ((MainActivity) mActivity).getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.content_frame, new Login()).commit();
+
+                    }
                 }
-                else{
-                    Date cDate = new Date();
-                    String fDate = new SimpleDateFormat("yyyy-MM-dd").format(cDate);
-
-                    Employee manager = new TeamMember( FirebaseInstanceId.getInstance().getToken(),fDate,Email,Password,task.getResult().getUser().getUid(),null);
-
-                    dataBaseConnectionPresenter.getDbReference().child("Users").child(task.getResult().getUser().getUid()).setValue(manager);
-
-                    FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame,new Login()).commit();
-
-                }
-            }
-        });
+            });
+        }catch (NullPointerException e){
+            progressBarPresenter.Hide();
+            e.printStackTrace();
+        }
     }
 }

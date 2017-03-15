@@ -1,7 +1,12 @@
 package com.example.ddnbinc.workforceplusplus.Utilities;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by davidhuang on 2017-01-27.
@@ -10,12 +15,30 @@ import java.util.Date;
 
 
 public class StringFormater {
+    private final static int oneDay =86400;
+    private final static int oneWeek=604800;
+    private final static int oneMinute=3600;
+    private final static int oneSecond=60;
     private SimpleDateFormat formatter;
+    private static StringFormater stringFormater;
 
     public StringFormater(){
 
     }
 
+    public String time(Long time){
+        SimpleDateFormat stringFormater = new SimpleDateFormat("hh:mm a", Locale.CANADA);
+        String dateString = stringFormater.format(new Date(time * 1000L));
+
+        return dateString;
+
+    }
+    public String ConvertTimeString(Long time){
+        Long End_time = (time % oneDay);
+
+        return combine(End_time / oneMinute,(End_time % oneMinute) / oneSecond,End_time);
+
+    }
     public String setDays(Long time){
         formatter = new SimpleDateFormat("EEEE");
 
@@ -23,11 +46,9 @@ public class StringFormater {
         return date;
     }
     public String Process(Long s,Long e){
-        Long Start_time = (s % 86400);
-        Long End_time = (e % 86400);
 
-        String start = combine(Start_time / 3600,(Start_time % 3600) / 60,Start_time);
-        String end = combine(End_time / 3600,(End_time % 3600) / 60,End_time);
+        String start = ConvertTimeString(s);
+        String end = ConvertTimeString(e);
 
         formatter = new SimpleDateFormat("MMMM d, yyyy");
         String dateString_begin = formatter.format(new Date(s * 1000L))+" "+start+"-"+end;
@@ -46,6 +67,21 @@ public class StringFormater {
         String dateString_begin = formatter.format(new Date(seconds_begin * 1000L));
         String dateString_end = formatter.format(new Date(seconds_end * 1000L));
         return dateString_begin+" - "+ dateString_end;
+    }
+    public String NotificationTime(Long time){
+        long temp = (System.currentTimeMillis()/1000)-time;
+
+        if(temp<60)return (temp+" Second(s) ago");
+        else if((temp/60)<60)return(temp/60+" Minute(s) ago");
+        else if((temp/60)/60<24) return((temp/60)/60+" Hour(s) ago");
+        else if(temp/60/60/24<31)return((temp/60)/60/24+" Day(s) ago");
+        else if(temp/60/60/24/30<13)return((temp/60)/60/24/30+" Month(s) ago");
+        else return((temp/60)/60/24/30/12+" Year(s) ago");
+
+    }
+    public static synchronized StringFormater getmInstance(){
+        if(stringFormater==null)stringFormater = new StringFormater();
+        return stringFormater;
     }
 
 

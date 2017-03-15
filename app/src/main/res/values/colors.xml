@@ -15,5 +15,7 @@
     <color name="blue">#0066cc</color>
     <color name="green">#00cc66</color>
     <color name="darkgray">#999999</color>
+    <color name="deny">#ff4d4d</color>
+    <color name="lightgreen">#80ff80</color>
 
 </resources>

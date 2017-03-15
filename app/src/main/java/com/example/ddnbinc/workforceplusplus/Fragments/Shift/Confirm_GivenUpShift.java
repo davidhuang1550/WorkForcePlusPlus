@@ -82,28 +82,32 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
 
     }
     public void sendNotification(){
-        dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
-                .child("fcmToken").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String fcm = dataSnapshot.getValue(String.class);
+        try {
+            dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
+                    .child("fcmToken").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String fcm = dataSnapshot.getValue(String.class);
 
-                SendNotification sendNotification = new SendNotification(mActivity,givenUpShift.getShiftId(),((MainActivity)mActivity)
-                        .getEmployee().getEmployeeId(),fcm);
+                    SendNotification sendNotification = new SendNotification(mActivity, givenUpShift.getShiftId(), ((MainActivity) mActivity)
+                            .getEmployee().getEmployeeId(), fcm);
 
-                MoveToPending();
-                sendNotification.sendToken();
-                ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+                    MoveToPending();
+                    sendNotification.sendToken();
+                    ConfirmationDialog confirmationDialog = new ConfirmationDialog();
 
-                confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
+                    confirmationDialog.show(((MainActivity) mActivity).getFragmentManager(), "Alert Dialog Fragment");
 
-            }
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
 
 
 

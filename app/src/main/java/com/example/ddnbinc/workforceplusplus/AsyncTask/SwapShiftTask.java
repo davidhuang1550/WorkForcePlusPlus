@@ -19,16 +19,14 @@ import java.util.LinkedHashMap;
 
 public class SwapShiftTask extends StringFormater{
 
-    private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private LinkedHashMap<String , ArrayList<GivenUpShift>> shifts;
     private Long time_now;
     private Long time_diff;
     private Query query;
     private SwapShiftModel swapShiftModel;
 
-    public SwapShiftTask(DataBaseConnectionPresenter d, SwapShiftModel swap, Query q,Long time_d,Long time_n){
+    public SwapShiftTask(SwapShiftModel swap, Query q,Long time_d,Long time_n){
         super();
-        dataBaseConnectionPresenter=d;
         shifts= new LinkedHashMap<>();
         swapShiftModel=swap;
         query=q;

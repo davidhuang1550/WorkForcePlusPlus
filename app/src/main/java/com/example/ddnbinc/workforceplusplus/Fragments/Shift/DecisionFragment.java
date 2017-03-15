@@ -47,7 +47,7 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
         employees= new Employee[2];
 
         Bundle bundle = getArguments();
-        if(bundle!=null){
+        if(bundle!=null && dataBaseConnectionPresenter!=null){
             init(bundle);
         }
 
@@ -70,9 +70,9 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
             employees[1] = (Employee) b.getParcelable("Taker");
 
 
-            giver.setText(employees[0].getEmail() + "Wants to give up a shift");
-            taker.setText("And " + employees[1].getEmail() + " wants to take the shift");
-            time.setText("At " + b.getString("Time"));
+            giver.setText(employees[0].getEmail());
+            taker.setText(employees[1].getEmail());
+            time.setText(b.getString("Time"));
             givenUpShift = (Shifts) b.getSerializable("Shift");
         }catch (RuntimeException e){
             e.printStackTrace();
