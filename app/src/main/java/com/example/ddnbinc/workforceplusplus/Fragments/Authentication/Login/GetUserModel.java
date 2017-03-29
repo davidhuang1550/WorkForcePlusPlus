@@ -80,6 +80,7 @@ public class GetUserModel {
                     if(notificationManager==null) {
                         redirect_ViewShift();
                     }else{
+
                         notificationManager.setView();
                     }
 

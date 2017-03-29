@@ -26,6 +26,11 @@ public class StringFormater {
 
     }
 
+    /*
+     * @param time = given a long timestamp in secodns convert the time into how many hours ago
+     * ie 5 minutes ago
+     * BUG if time surpasses 1 day it wil show 24hours + ago which is wrong we want to show 1 day ago
+     */
     public String time(Long time){
         SimpleDateFormat stringFormater = new SimpleDateFormat("hh:mm a", Locale.CANADA);
         String dateString = stringFormater.format(new Date(time * 1000L));

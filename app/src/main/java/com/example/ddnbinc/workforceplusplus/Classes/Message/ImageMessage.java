@@ -10,8 +10,9 @@ public class ImageMessage extends Message {
     public ImageMessage(){
 
     }
-    public ImageMessage(String SenderID, Long Timestamp,String SenderName){
+    public ImageMessage(String SenderID, Long Timestamp,String SenderName,String Imagekey){
         super(SenderID,Timestamp,SenderName);
+        this.ImageKey=Imagekey;
     }
 
     public Long getTimestamp() {

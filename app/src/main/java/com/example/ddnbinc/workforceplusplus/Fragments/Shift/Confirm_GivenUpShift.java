@@ -3,6 +3,7 @@ package com.example.ddnbinc.workforceplusplus.Fragments.Shift;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.PendingNotification;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Manager;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialog.ConfirmationDialog;
@@ -19,6 +21,7 @@ import com.example.ddnbinc.workforceplusplus.Notifications.SendNotification;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -28,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListener{
     private View myView;
     private GivenUpShift givenUpShift;
-    private TextView description;
+    private TextView time;
     private Activity mActivity;
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
 
@@ -48,15 +51,16 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
         ((MainActivity)mActivity).hideFab();
         Bundle bundle = getArguments();
 
-        description = (TextView)myView.findViewById(R.id.swap_shift_info);
+        time = (TextView)myView.findViewById(R.id.time);
 
         if(bundle!=null){
             givenUpShift= (GivenUpShift) bundle.getSerializable("GivenUpShift");
-            description.setText(bundle.getString("Times")+"\n Are you sure you want to take this shift?");
+            time.setText(bundle.getString("Times"));
 
         }
         Button yes = (Button)myView.findViewById(R.id.yes);
         Button no = (Button)myView.findViewById(R.id.no);
+
 
         yes.setOnClickListener(this);
         no.setOnClickListener(this);
@@ -87,16 +91,29 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
                     .child("fcmToken").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String fcm = dataSnapshot.getValue(String.class);
+                        String fcm = dataSnapshot.getValue(String.class),
+                        GivenUpShift = givenUpShift.getShiftId(),
+                        EmployeeId =((MainActivity) mActivity).getEmployee().getEmployeeId();
 
-                    SendNotification sendNotification = new SendNotification(mActivity, givenUpShift.getShiftId(), ((MainActivity) mActivity)
-                            .getEmployee().getEmployeeId(), fcm);
+
+                    // store the notification inside the users notification tab
+                    PendingNotification pendingNotification = new PendingNotification(System.currentTimeMillis()/1000,
+                            GivenUpShift,EmployeeId);
+
+                    // TODO make it so that we can send these notifications to all managers.
+                    DatabaseReference reference =  dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
+                            .child("Notifications").push();
+
+                    try {
+                        reference.setValue(pendingNotification);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    SendNotification sendNotification = new SendNotification(mActivity, GivenUpShift, EmployeeId, fcm,reference.getKey());
 
                     MoveToPending();
                     sendNotification.sendToken();
-                    ConfirmationDialog confirmationDialog = new ConfirmationDialog();
 
-                    confirmationDialog.show(((MainActivity) mActivity).getFragmentManager(), "Alert Dialog Fragment");
 
                 }
 
@@ -105,6 +122,9 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
 
                 }
             });
+            ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+
+            confirmationDialog.show(((MainActivity) mActivity).getFragmentManager(), "Alert Dialog Fragment");
         }catch (NullPointerException e){
             e.printStackTrace();
         }

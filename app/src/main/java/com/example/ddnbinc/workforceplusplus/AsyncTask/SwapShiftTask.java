@@ -1,6 +1,5 @@
 package com.example.ddnbinc.workforceplusplus.AsyncTask;
 
-import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Fragments.Shift.SwapShift.SwapShiftModel;
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;

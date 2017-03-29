@@ -40,6 +40,13 @@ public class NotificationManager extends StringFormater{
     private Shifts shifts;
     private String temp;
 
+
+    /*
+     * CONSTRUCTOR
+     * @param Activity  = MainActivity
+     * @param b = Bundle contains the reason for the notifications ie ( Response or Pending shift etc)
+     * @param prog = presenter for the progress bar because we started the loading in the mainactivity
+     */
     public NotificationManager(Activity activity, Bundle b, ProgressBarPresenter prog){
         super();
         mActivity=activity;
@@ -49,33 +56,65 @@ public class NotificationManager extends StringFormater{
         dataBaseConnectionPresenter=((MainActivity)mActivity).getDataBaseConnectionPresenter();
     }
 
-/*
-fetch all the nessasary data
- */
+    /*
+     * fetch all the nessasary data
+     * TODO clean this up
+     */
     public void setView(){
         temp = bundle.getString("Taker");
+
+        // delete the notification
+        deleteNotification((String)bundle.get("Notification_ID"),(MainActivity) mActivity);
+
         if(dataBaseConnectionPresenter!=null) {
             if (temp != null) {
                 // manager accepting tab
                 setReciever();
                 setShift();
             } else {
-                setShift();
+                LoadView();
                 //normal team member
             }
         }
 
     }
+
+    /*
+     * @param notification_id = notification id that is used to delete the spcific notification
+     * @param mActivity = since this is a static function we have to pass in the activity to fetch the Database
+     * connection object. Consider making DatabaseConnection a singleton so we dont need to keep doing this.
+     */
+    public  static void deleteNotification(String notification_id, MainActivity mActivity){
+        DataBaseConnectionPresenter dataBaseConnectionPresenter =((MainActivity)mActivity).getDataBaseConnectionPresenter();
+
+        dataBaseConnectionPresenter.getDbReference().child("Users").child(((MainActivity)mActivity).getEmployee().getEmployeeId())
+                .child("Notifications").child(notification_id).setValue(null);
+    }
+
+    /*
+     * @param id = the person giving up the shift id
+     * fetch the user since we are only given the id of the user
+     */
     public void setGiver(String id){
         query= dataBaseConnectionPresenter.getDbReference().child("Users").child(id);
 
         getusers(query,0);
     }
+    /*
+     * temp is declared in setView we only call this if the notification is for
+     * pending shifts
+     */
     public void setReciever(){
-        query= dataBaseConnectionPresenter.getDbReference().child("Users").child(bundle.getString("Taker"));
+        query= dataBaseConnectionPresenter.getDbReference().child("Users").child(temp);
         getusers(query,1);
     }
-    public void getusers(Query query,final int u){
+
+    /*
+     * @param Query = specifies the query needed to fetch the abstract information
+     * @param u = is the users we are fetching, since we are fetching 2 users we want to call
+     * set view once we fetch both users.
+     */
+    private void getusers(Query query,final int u){
        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -95,6 +134,10 @@ fetch all the nessasary data
         });
 
     }
+
+    /*
+     * fetch this shift that is pending.
+     */
     public void setShift(){
         dataBaseConnectionPresenter.getDbReference().child("Shifts").child(bundle.getString("ShiftId")).
                 addListenerForSingleValueEvent(new ValueEventListener() {
@@ -102,8 +145,9 @@ fetch all the nessasary data
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shifts = dataSnapshot.getValue(Shifts.class);
                 shifts.setShiftId(dataSnapshot.getKey());
-                if(temp!=null)setGiver(shifts.getEmployeeid());
-                else{LoadView();}
+                //if(temp!=null)
+                setGiver(shifts.getEmployeeid());
+               // else{LoadView();}
             }
 
             @Override
@@ -115,7 +159,7 @@ fetch all the nessasary data
     /*
     called once all info is gathered
      */
-    public void LoadView(){
+    private void LoadView(){
         try {
             Bundle new_bundle = new Bundle();
 
@@ -128,6 +172,7 @@ fetch all the nessasary data
                 new_bundle.putSerializable("Shift", (Serializable) shifts);
                 new_bundle.putParcelable("Giver", (Parcelable) employee[0]);
                 new_bundle.putParcelable("Taker", (Parcelable) employee[1]);
+
                 DecisionFragment decisionFragment = new DecisionFragment();
                 decisionFragment.setArguments(new_bundle);
                 fragmentManager.beginTransaction().add(R.id.content_frame,decisionFragment).commit();

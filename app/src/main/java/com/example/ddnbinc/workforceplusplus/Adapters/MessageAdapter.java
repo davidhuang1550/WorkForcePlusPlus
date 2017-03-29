@@ -1,16 +1,17 @@
 package com.example.ddnbinc.workforceplusplus.Adapters;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -20,11 +21,13 @@ import com.example.ddnbinc.workforceplusplus.Classes.Message.ImageMessage;
 import com.example.ddnbinc.workforceplusplus.Classes.Message.Message;
 import com.example.ddnbinc.workforceplusplus.Classes.Message.TextMessage;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
+import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Decorator.OtherOngoingDecorator;
 import com.example.ddnbinc.workforceplusplus.Decorator.OtherStartDecorator;
 import com.example.ddnbinc.workforceplusplus.Decorator.TextDecorator;
 import com.example.ddnbinc.workforceplusplus.Decorator.UserOngoingDecorator;
 import com.example.ddnbinc.workforceplusplus.Decorator.UserStartDecorator;
+import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,7 +36,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -80,28 +86,81 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         return null;
     }
 
+    public void setImage(ImageView view, Uri Path)throws IOException{
+        view.setImageBitmap(MediaStore.Images.Media.getBitmap(mActivity.getContentResolver(),Path));
+
+    }
+
+    private void downloadImage(final String imageKey, final ImageView imageView){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/chatroom/"
+                + imageKey);
+        storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                try {
+
+                    Target target = new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            String path = saveToInternalStorage(bitmap);
+                            if (path != null) {
+                                try {
+                                    setImage(imageView, Uri.parse(path));
+                                }catch (IOException e){
+                                    // probably wont throw an error
+                                }
+                                employee.pushImage(imageKey, path);
+                                DataBaseConnectionPresenter dataBaseConnectionPresenter = ((MainActivity) mActivity).getDataBaseConnectionPresenter();
+                                dataBaseConnectionPresenter.getDbReference().child("Users").child(employee.getEmployeeId()).child("storedImages")
+                                        .setValue(employee.getStoredImages());
+                            }else{
+                                //error with saving image into gallery
+                            }
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        }
+                    };
+
+                    Picasso.with(mActivity).load(task.getResult().toString()).into(target);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(mActivity, "Failed to download image check Internet Connection", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
-    public void onBindViewHolder(final MessageAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final MessageAdapter.ViewHolder holder, final int position) {
         if(type){
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/Chat/"
-                    +((ImageMessage)messages.get(position)).getImageKey());
-            storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    try {
-                        Picasso.with(mActivity).load(task.getResult()).fit().into(holder.imageView);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
+            final String imageKey  =((ImageMessage)messages.get(position)).getImageKey();
+            Uri imagePath = employee.getFindImagePath(imageKey);
+            if(imagePath != null){
+                try {
+                    setImage(holder.imageView, imagePath);
+                }catch (IOException e){
+                    downloadImage(imageKey,holder.imageView);
 
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                   // Toast.makeText(mActivity, "Failed to download image check Internet Connection", Toast.LENGTH_SHORT).show();
-                }
-            });
+                // if imagePath returuns Null then delete it from the db and download the image again.
+                // consider using a local db to store the image reference instead of using the cloud
+            }
+            else {
+                downloadImage(imageKey,holder.imageView);
+            }
         }else{
             if(!isemployee) holder.title.setText(((TextMessage)messages.get(position)).getSenderID());
             else holder.tableLayout.removeView(holder.sender);
@@ -194,12 +253,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             super(itemView);
             tableLayout = (TableLayout)itemView.findViewById(R.id.Table);
             sender = (TableRow) tableLayout.findViewById(R.id.tableRow1);
-            TableRow message = (TableRow) tableLayout.findViewById(R.id.tableRow2);
+            final TableRow message = (TableRow) tableLayout.findViewById(R.id.tableRow2);
 
             settablebackground(tableLayout);
             if(type){
+
                 imageView = createImageView();
-                ((LinearLayout)itemView).addView(imageView);
+                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT,1.0f);
+                this.imageView.setLayoutParams(layoutParams);
+                this.imageView.setPadding(0,0,10,0);
+
+                imageView.setMinimumHeight(700);
+                imageView.setMinimumWidth(700);
+                message.addView(imageView);
+
             }else{
                 title = createTextView();
                 sender.addView(title);
@@ -218,7 +286,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
     }
 
+    private String saveToInternalStorage(Bitmap bitmapImage){
 
-
+        return MediaStore.Images.Media.insertImage(mActivity.getContentResolver(), bitmapImage, "WorkForce++" , null);
+    }
 }
 

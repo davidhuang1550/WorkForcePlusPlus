@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -46,13 +47,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+/*
+ * This is mainly used for menu items ie, hide, show, inflate as well as a mediator for databaseconnetction
+ * and fab presenter.
+ */
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener {
 
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private Employee employee;
     private FabPresenter fabPresenter;
-    private Menu menu;
+    private Menu tools;
+    private MenuItem upload;
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetworkInfo;
 
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        menu=navigationView.getMenu();
+        tools=navigationView.getMenu();
 
         FloatingActionButton floatingActionButton = (FloatingActionButton)findViewById(R.id.fab);
         fabPresenter = new FabPresenter(floatingActionButton,this);
@@ -91,6 +98,7 @@ public class MainActivity extends AppCompatActivity
              */
             Bundle bundle1= bundle.getBundle("Info");
             if(bundle1!=null) {
+
                 ProgressBarPresenter progressBarPresenter = new ProgressBarPresenter(this, "Loading");
                 progressBarPresenter.Show();
 
@@ -173,6 +181,15 @@ public class MainActivity extends AppCompatActivity
     public void hideFab(){
         fabPresenter.Hide();
     }
+
+    public void showUpload(){
+        upload.setVisible(true);
+    }
+
+    public void hideUpload(){
+        upload.setVisible(false);
+    }
+
     public Employee getEmployee(){
         return employee;
     }
@@ -180,13 +197,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main,menu);
 
-        MenuItem menuItem = menu.getItem(0);
-        menuItem.setVisible(false); // dont need this yet.
+        upload = menu.getItem(0);
+        upload.setVisible(false); // dont need this yet.
 
         return true;
     }
+
+
     public void hideStatusBar(){
         getSupportActionBar().hide();
     }
@@ -216,10 +236,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void hideManagerView(){
-        menu.findItem(R.id.Pending).setVisible(false);// set logout and login respectively
+        tools.findItem(R.id.Pending).setVisible(false);// set logout and login respectively
     }
     public void showManagerView(){
-        menu.findItem(R.id.Pending).setVisible(true);// set logout and login respectively
+        tools.findItem(R.id.Pending).setVisible(true);// set logout and login respectively
     }
 
     @Override
@@ -229,6 +249,14 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if(id== R.id.upload){
+            try {
+                Intent galleryIntent = new Intent();
+                galleryIntent.setType("image/*");
+                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(galleryIntent, 2);
+            }catch(RuntimeException e){e.printStackTrace();}
+          //  Toast.makeText(this,"Upload selected", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -237,15 +265,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode==RESULT_OK) {
-            if (requestCode == 1) {
-                ImageUploader imageUploader = new ImageUploader(dataBaseConnectionPresenter,employee.getEmployeeId(),this);
-                String path= imageUploader.getPath(this,data.getData());
-                imageUploader.setFilePath(path);
-                imageUploader.UploadImage();
+            ImageUploader imageUploader = new ImageUploader(dataBaseConnectionPresenter,this);
+            String path= imageUploader.getPath(this,data.getData());
+            imageUploader.setFilePath(path);
+            switch (requestCode) {
+                case 1:
+                    imageUploader.setStorageReference(R.string.PROFILE_IMAGE);
+                    imageUploader.UploadImage();
+                    break;
+                case 2:
+                    imageUploader.setStorageReference(R.string.CHAT_ROOM_IMAGE);
+                    imageUploader.UploadImage();
+                    break;
             }
         }
     }
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            //resume tasks needing this permission
+        }
+    }
+    public boolean isExternalStorageWritable() {
+        String permission = "android.permission.WRITE_EXTERNAL_STORAGE"; // get permissions
+        int res= this.checkCallingOrSelfPermission(permission);
+        return (res== PackageManager.PERMISSION_GRANTED);
+    }
     public boolean checkReadExternalPermission(){
         String permission = "android.permission.READ_EXTERNAL_STORAGE"; // get permissions
         int res= this.checkCallingOrSelfPermission(permission);

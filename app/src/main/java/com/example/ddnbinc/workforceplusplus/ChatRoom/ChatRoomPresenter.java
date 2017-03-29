@@ -3,6 +3,8 @@ package com.example.ddnbinc.workforceplusplus.ChatRoom;
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 
+import com.example.ddnbinc.workforceplusplus.Classes.Message.Message;
+
 /**
  * Created by davidhuang on 2017-03-11.
  */
@@ -19,9 +21,6 @@ public class ChatRoomPresenter {
         chatRoomManager.FetchMessages();
     }
 
-    public boolean SendMessage(String message){
-        return chatRoomManager.SendMessage(message);
-    }
 
     public void forceScrollToBottom(){
         chatRoomManager.forceScrollToBottom();

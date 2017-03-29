@@ -120,20 +120,6 @@ public class ChatRoomManager {
         recyclerView.setAdapter(messageAdapter);
     }
 
-    public boolean SendMessage(String message){
-        try {
-            Message sendingMessage = new TextMessage(employee.getEmployeeId(), (System.currentTimeMillis()/1000),
-                    message,employee.getName());
-
-            DatabaseReference referece = dataBaseConnectionPresenter.getDbReference().child("ChatRoom").push();
-
-            referece.setValue(sendingMessage);
-        }catch (DatabaseException e){
-            System.out.println(e.toString());
-            return false;
-        }
-        return true;
-    }
 
 
 }

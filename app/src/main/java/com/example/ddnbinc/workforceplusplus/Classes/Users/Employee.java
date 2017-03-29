@@ -1,18 +1,20 @@
 package com.example.ddnbinc.workforceplusplus.Classes.Users;
 
-import android.os.Parcel;
+import android.net.Uri;
 import android.os.Parcelable;
 
-import com.example.ddnbinc.workforceplusplus.Classes.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.Notification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by david on 2017-01-23.
  */
 
 public abstract class Employee implements Serializable,Parcelable{
+
     private String FcmToken;
     private String StartDate;
     private String Email;
@@ -20,6 +22,9 @@ public abstract class Employee implements Serializable,Parcelable{
     private String Password;
     private String Privilleges;
     private String Name;
+    private ArrayList<Notification> notification;
+    private HashMap<String,String> storedImages;
+
     public Employee(){
 
     }
@@ -32,9 +37,10 @@ public abstract class Employee implements Serializable,Parcelable{
     * @param priv = Privilleges
     * @param not = Notifications
     * @param n = Name
+    * @param stored = Stored Images
     */
 
-    public Employee(String f, String s, String e,String p,String id,String priv,ArrayList<Notification> not,String n){
+    public Employee(String f, String s, String e,String p,String id,String priv,ArrayList<Notification> not,String n,HashMap<String,String> stored){
         FcmToken=f;
         StartDate=s;
         Email=e;
@@ -43,6 +49,7 @@ public abstract class Employee implements Serializable,Parcelable{
         Privilleges=priv;
         notification=not;
         Name=n;
+        storedImages=stored;
     }
 
     public ArrayList<Notification> getNotification() {
@@ -56,9 +63,13 @@ public abstract class Employee implements Serializable,Parcelable{
         if(notification==null)notification = new ArrayList<>();
         notification.add(notifi);
     }
+    public HashMap<String, String> getStoredImages() {
+        return storedImages;
+    }
 
-    private ArrayList<Notification> notification;
-
+    public void setStoredImages(HashMap<String, String> storedImages) {
+        this.storedImages = storedImages;
+    }
 
     public String getEmail() {
         return Email;
@@ -114,6 +125,14 @@ public abstract class Employee implements Serializable,Parcelable{
         Name = name;
     }
 
+    public void pushImage(String key, String path){
+        if(storedImages == null) storedImages = new HashMap<>();
+        storedImages.put(key,path);
+    }
 
-
+    public Uri getFindImagePath(String key){
+        if(storedImages == null) storedImages = new HashMap<>();
+        String temp =storedImages.get(key);
+        return (temp!=null) ? Uri.parse(temp) : null ;
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.ddnbinc.workforceplusplus.Fragments.Authentication.Login;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +54,6 @@ public class Login extends Fragment  implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView= inflater.inflate(R.layout.login_page,container,false);
         mActivity.setTitle("Log In");
-
         ((MainActivity)mActivity).hideStatusBar();
 
         et1 = (EditText)myView.findViewById(R.id.userName);
@@ -70,24 +71,28 @@ public class Login extends Fragment  implements View.OnClickListener{
         signin.setOnClickListener(this);
 
 
-
-
-
         return myView;
     }
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.signIn:
 
-                Email=et1.getText().toString();
-                Password = et2.getText().toString();
+                if(((MainActivity)mActivity).isExternalStorageWritable()==false) {
+                    ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 102);
 
-                progressBarPresenter = new ProgressBarPresenter(mActivity,"Loging In...");
-                progressBarPresenter.Show();
-                loginPresenter = new LoginPresenter(Email,Password,dataBaseConnectionPresenter,mActivity,progressBarPresenter);
-                if(rememberMe.isChecked())_storeCredentials(Email,Password);
-                else{ destroyPreferences(sharedPreferences);}
-                loginPresenter.Login();
+                }else {
+                    Email = et1.getText().toString();
+                    Password = et2.getText().toString();
+
+                    progressBarPresenter = new ProgressBarPresenter(mActivity, "Loging In...");
+                    progressBarPresenter.Show();
+                    loginPresenter = new LoginPresenter(Email, Password, dataBaseConnectionPresenter, mActivity, progressBarPresenter);
+                    if (rememberMe.isChecked()) _storeCredentials(Email, Password);
+                    else {
+                        destroyPreferences(sharedPreferences);
+                    }
+                    loginPresenter.Login();
+                }
 
                 break;
             case R.id.signup:

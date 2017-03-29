@@ -3,10 +3,11 @@ package com.example.ddnbinc.workforceplusplus.Classes.Users;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.ddnbinc.workforceplusplus.Classes.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.Notification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by david on 2017-01-23.
@@ -26,10 +27,13 @@ public class Manager extends Employee implements Serializable,Parcelable {
     * @param priv = Privilleges
     * @param not = Notifications
     * @param n = Name
+    * @param stored = Stored Images
+
     */
 
-    public Manager(String f, String s, String e, String p, String id, String priv, ArrayList<Notification> not,String n){
-       super(f,s,e,p,id,priv,not,n);
+    public Manager(String f, String s, String e, String p, String id, String priv,
+                   ArrayList<Notification> not,String n,HashMap<String,String> stored){
+       super(f,s,e,p,id,priv,not,n,stored);
     }
 
     public ArrayList<Notification> getNotification() {
@@ -91,6 +95,13 @@ public class Manager extends Employee implements Serializable,Parcelable {
         super.setName(name);
     }
 
+    public HashMap<String, String> getStoredImages() {
+        return super.getStoredImages();
+    }
+
+    public void setStoredImages(HashMap<String, String> storedImages) {
+        super.setStoredImages(storedImages);
+    }
 
     public void setPrivilleges(String privilleges) {
         super.setPrivilleges(privilleges);

@@ -7,6 +7,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by david on 2017-01-23.
+ * wrapping a singleton object on another singleton....
+ * change this when you can.
  */
 
 public class DataBaseConnectionPresenter {

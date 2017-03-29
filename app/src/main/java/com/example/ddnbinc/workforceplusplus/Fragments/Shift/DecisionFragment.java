@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.ResponseNotification;
 import com.example.ddnbinc.workforceplusplus.Classes.Shifts;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
@@ -20,6 +21,7 @@ import com.example.ddnbinc.workforceplusplus.Fragments.Shift.ViewShift.ViewShift
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.Notifications.SendNotification;
 import com.example.ddnbinc.workforceplusplus.R;
+import com.google.firebase.database.DatabaseReference;
 
 /**
  * Created by davidhuang on 2017-01-26.
@@ -74,6 +76,7 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
             taker.setText(employees[1].getEmail());
             time.setText(b.getString("Time"));
             givenUpShift = (Shifts) b.getSerializable("Shift");
+
         }catch (RuntimeException e){
             e.printStackTrace();
         }
@@ -99,13 +102,23 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
 
     }
     public void NotifyEmployees(String Response){
-        SendNotification sendNotification_emp1 = new SendNotification(mActivity,givenUpShift.getShiftId(), Response,employees[0].getFcmToken());
-        sendNotification_emp1.sendToken();
-
-        SendNotification sendNotification_emp2 = new SendNotification(mActivity,givenUpShift.getShiftId(), Response,employees[1].getFcmToken());
-        sendNotification_emp2.sendToken();
+        PushToEmployees(employees[0],Response);
+        PushToEmployees(employees[1],Response);
 
     }
+
+    public void PushToEmployees(Employee employee, String Response){
+        ResponseNotification responseNotification = new ResponseNotification(Response,System.currentTimeMillis()/1000);
+        DatabaseReference reference = dataBaseConnectionPresenter.getDbReference().child("Users").child(employee.getEmployeeId()).child("Notifications")
+                .push();
+        reference.setValue(responseNotification);
+
+        SendNotification sendNotification_emp = new SendNotification(mActivity,givenUpShift.getShiftId(), Response,employee.getFcmToken(),reference.getKey());
+        sendNotification_emp.sendToken();
+
+    }
+
+
 
     public void setDisplay(){
         /*

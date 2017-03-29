@@ -12,6 +12,10 @@ import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +30,7 @@ public class SendNotification {
 
     private String fcm;
     private String Response;
-
+    private String reference;
     /*
 
     url that contains php code that act as a meditator which uses CURL to communicate to the firebase server
@@ -35,11 +39,12 @@ public class SendNotification {
 
     private String app_server_url ="https://ddnbinc.000webhostapp.com/fcm_insert.php";
     private String EmployeeId; // this can be employee id or a response
-    public SendNotification(Activity activity, String shift,String id,String fm){
+    public SendNotification(Activity activity, String shift,String id,String fm,String reference){
         mActivity=activity;
         givenUpShift=shift;
         EmployeeId=id;
         fcm=fm;
+        this.reference = reference;
     }
 
 
@@ -62,20 +67,21 @@ public class SendNotification {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
                 // replace the fcm_token get instance with a real fcm token
+
                 /*
                 set map will appear on the php server as a POST which they will then parse to send as title
                 and body
                  */
+
                 params.put("fcm_token", fcm);
                 params.put("shift_id",givenUpShift);
                 params.put("Taker",EmployeeId);
+                params.put("Notification_id", reference);
 
                 return params;
             }
         };
         MySingleton.getmInstance(((MainActivity)mActivity)).addRequestQueue(stringRequest);
-
-
 
 
     }

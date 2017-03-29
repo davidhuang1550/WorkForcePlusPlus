@@ -9,4 +9,17 @@
     <string name="PASSWORD">Password</string>
     <string name="USERNAME">Username</string>
     <string name="CREDENTIALS">Credentials</string>
+
+    <string name="PROFILE_IMAGE">profile image</string>
+    <string name="CHAT_ROOM_IMAGE">chat room image</string>
+
+    <string name="TRADE_PENDING">TradePending</string>
+    <string name="TRADE_SUCESSFUL">TradeSucessful</string>
+    <string name="TRADE_UNSUCESSFUL">TradeUnsucessful</string>
+    <string name="MESSAGE">message</string>
+    <string name="URGENT">urgent</string>
+
+
+
+
 </resources>

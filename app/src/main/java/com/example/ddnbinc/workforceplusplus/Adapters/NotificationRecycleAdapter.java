@@ -1,17 +1,20 @@
 package com.example.ddnbinc.workforceplusplus.Adapters;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.ddnbinc.workforceplusplus.Classes.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.MessageNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.PendingNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.ResponseNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.UrgentNotification;
 import com.example.ddnbinc.workforceplusplus.R;
-import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 
 import java.util.ArrayList;
 
@@ -21,13 +24,19 @@ import java.util.ArrayList;
 
 public class NotificationRecycleAdapter extends RecyclerView.Adapter<NotificationRecycleAdapter.ViewHolder> {
     private ArrayList<Notification> notifications;
+    private Activity mActivity;
 
-    public NotificationRecycleAdapter(ArrayList<Notification> noti){
+    public NotificationRecycleAdapter(ArrayList<Notification> noti, Activity activity){
         notifications=noti;
+        mActivity=activity;
     }
+
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_tab, parent, false);
 
         ViewHolder holder = new ViewHolder(v);
@@ -36,11 +45,16 @@ public class NotificationRecycleAdapter extends RecyclerView.Adapter<Notificatio
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.Description.setText(notifications.get(position).getMessage());
-        notifications.get(position).setView(holder.ImageType);
-        holder.Timestamp.setText(StringFormater.getmInstance().NotificationTime(notifications.get(position).getTimestamp()));
-        holder.Title.setText(notifications.get(position).getTitle());
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        Notification notification = notifications.get(position);
+
+        notification.setImageView(holder.ImageType);
+        notification.setDescription(holder.Description);
+        notification.setTimestampView(holder.Timestamp);
+        notification.setTitle(holder.Title);
+
+        ((ResponseNotification) notification).setListener(holder,mActivity);
+
     }
 
     @Override

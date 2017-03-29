@@ -8,7 +8,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Toast;
 
 import com.example.ddnbinc.workforceplusplus.Adapters.NotificationRecycleAdapter;
-import com.example.ddnbinc.workforceplusplus.Classes.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.MessageNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.Notification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.PendingNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.ResponseNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Notifications.UrgentNotification;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
@@ -48,7 +52,17 @@ public class NotificationTabManager {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for(DataSnapshot snapshot :dataSnapshot.getChildren()){
-                            Notification notifi = snapshot.getValue(Notification.class);
+                            Notification notifi = null;
+                            if(snapshot.hasChild("Shift")){
+                                notifi = snapshot.getValue(PendingNotification.class);
+                            }else if(snapshot.hasChild("Message")){
+                                notifi = snapshot.getValue(MessageNotification.class);
+                            }else if(snapshot.hasChild("Response")){
+                                notifi = snapshot.getValue(ResponseNotification.class);
+                            }else{
+                                notifi = snapshot.getValue(UrgentNotification.class);
+                            }
+
                             notifications.add(notifi);
                         }
                         if(first_iteration==false){
@@ -71,7 +85,7 @@ public class NotificationTabManager {
     }
     public void setView(){
         swipeRefreshLayout.setRefreshing(false);
-        adapter = new NotificationRecycleAdapter(notifications);
+        adapter = new NotificationRecycleAdapter(notifications,mActivity);
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override

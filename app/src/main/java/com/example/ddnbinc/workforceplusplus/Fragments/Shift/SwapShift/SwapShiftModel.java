@@ -34,10 +34,7 @@ import java.util.Map;
 
 public class SwapShiftModel extends StringFormater implements  Serializable{
 
-    private final static int oneDay =86400;
     private final static int oneWeek=604800;
-    private final static int oneMinute=3600;
-    private final static int oneSecond=60;
 
     private Activity mActivity;
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;

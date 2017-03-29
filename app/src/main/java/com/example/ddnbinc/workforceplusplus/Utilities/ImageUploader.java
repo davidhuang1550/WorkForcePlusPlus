@@ -11,15 +11,23 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.widget.ImageView;
 
+import com.example.ddnbinc.workforceplusplus.ChatRoom.SendMessageManager;
+import com.example.ddnbinc.workforceplusplus.Classes.Message.ImageMessage;
+import com.example.ddnbinc.workforceplusplus.Classes.Message.Message;
+import com.example.ddnbinc.workforceplusplus.Classes.Message.TextMessage;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarModel;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
+import com.example.ddnbinc.workforceplusplus.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
@@ -30,17 +38,43 @@ import java.io.ByteArrayOutputStream;
 public  class ImageUploader {
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private String FilePath;
-    private String EmpId;
     private MainActivity mActivity;
-    public ImageUploader(DataBaseConnectionPresenter dataBase,String Id,MainActivity activity){
+    private StorageReference storageRef;
+    private ImageView imageView;
+    private StorageReference ImageRef;
+    private int type;
+    private String key;
+
+    public ImageUploader(DataBaseConnectionPresenter dataBase,MainActivity activity){
         dataBaseConnectionPresenter=dataBase;
-        EmpId=Id;
         mActivity=activity;
 
     }
     public void setFilePath(String file){
         FilePath=file;
     }
+
+    public void setStorageReference(int type){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        this.type = type;
+        switch (type){
+            case R.string.PROFILE_IMAGE:
+                storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/Images/");
+                imageView = (ImageView)mActivity.findViewById(R.id.profileImage);
+                ImageRef = storageRef.child(((MainActivity)mActivity).getEmployee().getEmployeeId());
+                break;
+            case R.string.CHAT_ROOM_IMAGE:
+                storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/chatroom/");
+                DatabaseReference reference= dataBaseConnectionPresenter.getDbReference().child("temp").push();
+                reference.setValue(0);
+                key=reference.getKey();
+
+                ImageRef = storageRef.child(key);
+                break;
+        }
+
+    }
+
     public void UploadImage(){
         final ProgressBarModel progressBarModel = new ProgressBarModel(mActivity,"Uploading Image");
         progressBarModel.ShowProgressDialog();
@@ -51,9 +85,7 @@ public  class ImageUploader {
         byte[] bytes = stream.toByteArray();
 
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://workforceplusplus.appspot.com/Images/");
-        StorageReference ImageRef = storageRef.child(EmpId);
+
         UploadTask uploadTask = ImageRef.putBytes(bytes);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -67,16 +99,24 @@ public  class ImageUploader {
                 load the image. onto the view
                  */
                 progressBarModel.HideProgressDialog();
-              //  FragmentManager fragmentManager =((MainActivity)mActivity).getFragmentManager();
-               // fragmentManager .beginTransaction().replace(R.id.content_frame,new ProfileFragment(),"Shift").commit();
+                switch(type){
+                    case R.string.PROFILE_IMAGE:
+                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Picasso.with(((MainActivity)mActivity).getApplicationContext()).load(downloadUrl).fit().into(imageView);
+                        break;
+                    case R.string.CHAT_ROOM_IMAGE:
+                    // chat room image
+                        Message sendingMessage = new ImageMessage(((MainActivity)mActivity).getEmployee().getEmployeeId(),
+                            (System.currentTimeMillis()/1000),((MainActivity)mActivity).getEmployee().getName(),key);
+
+                        SendMessageManager.SendMessage(sendingMessage,dataBaseConnectionPresenter);
+                        break;
+                }
 
             }
         });
 
-
     }
-
-
 
     public static String getPath(final Context context, final Uri uri) {
 
