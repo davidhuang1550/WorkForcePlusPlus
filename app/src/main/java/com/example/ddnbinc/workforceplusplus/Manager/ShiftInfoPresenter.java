@@ -14,8 +14,8 @@ public class ShiftInfoPresenter {
     public ShiftInfoPresenter(Activity activity,String t1, String t2){
         shiftInfoModel= new ShiftInfoModel(activity,t1,t2);
     }
-    public void setView(View view){
-        shiftInfoModel.setView(view);
+    public void setView(){
+        shiftInfoModel.setView();
     }
 
 }

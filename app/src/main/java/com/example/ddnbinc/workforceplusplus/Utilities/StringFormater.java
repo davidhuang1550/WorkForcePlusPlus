@@ -22,11 +22,11 @@ public class StringFormater {
     private SimpleDateFormat formatter;
     private static StringFormater stringFormater;
 
-    public StringFormater(){
+    private StringFormater(){
 
     }
 
-    /*
+    /**
      * @param time = given a long timestamp in secodns convert the time into how many hours ago
      * ie 5 minutes ago
      * BUG if time surpasses 1 day it wil show 24hours + ago which is wrong we want to show 1 day ago
@@ -38,6 +38,12 @@ public class StringFormater {
         return dateString;
 
     }
+
+    /**
+     * this function converts the time to hours
+     * @param time
+     * @return
+     */
     public String ConvertTimeString(Long time){
         Long End_time = (time % oneDay);
 
@@ -45,8 +51,8 @@ public class StringFormater {
 
     }
     public String setDays(Long time){
-        formatter = new SimpleDateFormat("EEEE");
-
+        formatter = new SimpleDateFormat("EEEE MMMM d");
+        // this returns one day ahead of today.
         String date = formatter.format(new Date(time * 1000L));
         return date;
     }

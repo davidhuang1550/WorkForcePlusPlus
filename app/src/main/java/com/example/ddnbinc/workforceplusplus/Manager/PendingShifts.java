@@ -43,14 +43,14 @@ public class PendingShifts extends Fragment implements FragmentManager.OnBackSta
         ((MainActivity)mActivity).setTitle("Pending Shifts");
         ListView listView = (ListView)myView.findViewById(R.id.listview);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)myView.findViewById(R.id.swiperefresh);
-        pendingShiftsPresenter = new PendingShiftsPresenter(mActivity,listView,swipeRefreshLayout,myView);
+        pendingShiftsPresenter = new PendingShiftsPresenter(mActivity,listView,swipeRefreshLayout);
         pendingShiftsPresenter.fetchShifts();
-
+        swipeRefreshLayout.setEnabled(false);
 
         return myView;
     }
     /*
-    maybe for future use if this gets bigger
+     * maybe for future use if this gets bigger
      */
     public void init(){
 

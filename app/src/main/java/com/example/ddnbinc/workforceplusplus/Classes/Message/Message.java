@@ -9,7 +9,6 @@ public abstract class Message {
     private String SenderID;
     private String SenderName;
     private Long Timestamp;
-    private boolean type;
 
     public Message(){
 
@@ -35,7 +34,6 @@ public abstract class Message {
         SenderID = sender;
     }
     public abstract boolean getType();
-    public void setType(Boolean type){this.type=type;}
     public String getSenderName() {
         return SenderName;
     }

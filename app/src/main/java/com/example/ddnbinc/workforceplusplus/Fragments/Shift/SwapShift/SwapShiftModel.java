@@ -32,7 +32,7 @@ import java.util.Map;
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftModel extends StringFormater implements  Serializable{
+public class SwapShiftModel implements  Serializable{
 
     private final static int oneWeek=604800;
 
@@ -43,96 +43,130 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
     private int  responseNum;
     private TableLayout tableLayout;
     private HashMap<String,ArrayList<GivenUpShift>> shifts;
-    private Long endTime;
-    private Query query;
+    private Long _startTime;
     private View MainView;
     private boolean clickable;
 
-    public SwapShiftModel(Activity a, DataBaseConnectionPresenter data, SwipeRefreshLayout swipe, View v,View main){
-        mActivity= a;
-        dataBaseConnectionPresenter=data;
-        swipeRefreshLayout=swipe;
-        myView=v;
-        responseNum=0;
-        tableLayout= (TableLayout)myView.findViewById(R.id.layouttable);
-        MainView=main;
-    }
+    /**
+     *
+     * @param a Activity, probably going to be mainactivity
+     * @param swipe SwipeViewLayout resfresher for the purpose of stopping the refreshing button
+     * @param main the view in which we must populate the tablelayout with rows.
+     */
     public SwapShiftModel(Activity a, SwipeRefreshLayout swipe,View main){
         mActivity= a;
         swipeRefreshLayout=swipe;
         responseNum=0;
         MainView=main;
     }
+
+    /**
+     *
+     * @param data the database connection singleton
+     */
     public void setDatabase(DataBaseConnectionPresenter data){
         dataBaseConnectionPresenter=data;
     }
+
+    /**
+     *
+     * @param view if we did not set the view already from the constructor or we must change the view
+     *              then we can set the view dynamically
+     */
     public void setView(View view){
         myView=view;
         tableLayout= (TableLayout)myView.findViewById(R.id.layouttable);
     }
+
+    /**
+     *
+     * @param b if true, we are in the swap shift view we can use normal click listeners
+     *          otherwise use the long click listener.
+     */
     public void setClickable(boolean b){
         clickable=b;
     }
 
-    /*
-    can simplfy this some more
+    /**
+     * This function is generally used for swap shifts so we dont need a reference key to the employee
+     * @param t1 start time
+     * @param t2 end time
+     * @return database querying query
      */
-    public void setSwap(Long t1, Long t2){
-        query=dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("startTime").
+    public Query setSwap(Long t1, Long t2){
+        return dataBaseConnectionPresenter.getDbReference().child("GivenUpShifts").orderByChild("startTime").
                 startAt(t1).endAt(t2);
     }
-    public void setShift(Long t1, Long t2,String employee){
-        query=dataBaseConnectionPresenter.getDbReference().child("Users").child(employee).child("Shifts").orderByChild("startTime").
+
+    /**
+     * used to fetch shifts of the employee logged in
+     * @param t1 start time
+     * @param t2 end time
+     * @param employee employee reference key
+     * @return database querying query
+     */
+    public Query setShift(Long t1, Long t2,String employee){
+        return dataBaseConnectionPresenter.getDbReference().child("Users").child(employee).child("Shifts").orderByChild("startTime").
                 startAt(t1).endAt(t2);
+
     }
-    public void next_init(String employee){
-        Long End = endTime+oneWeek;
 
-        if(employee==null) {
-            setSwap(endTime,End);
-        }else{
-            setShift(endTime,End,employee);
-        }
-
-        final SwapShiftTask swapShiftTask = new SwapShiftTask(this,query,endTime,End);
-
-        swipeRefreshLayout.setRefreshing(true);
-
-        swapShiftTask.Execute();
-    }
+    /**
+     *
+     * @param employee reference key
+     */
     public void init(String employee){
-        Long End = endTime+oneWeek;
+        Long End = _startTime+oneWeek;
+        Query query;
+        query = (employee == null ) ? setSwap(_startTime,End) : setShift(_startTime,End,employee);
 
-        if(employee==null) {
-            setSwap(endTime,End);
-        }else{
-            setShift(endTime,End,employee);
-        }
-
-        SwapShiftTask swapShiftTask = new SwapShiftTask(this, query, endTime, End);
+        SwapShiftTask swapShiftTask = new SwapShiftTask(this, query, _startTime, End);
         swipeRefreshLayout.setRefreshing(true);
 
         swapShiftTask.Execute();
     }
+
     public void setDateHeader(){
         TextView textView = (TextView)MainView.findViewById(R.id.work_week);
 
-        textView.setText(setHeader(endTime,endTime+oneWeek));
+        textView.setText(StringFormater.getmInstance().setHeader(_startTime+86400,_startTime+oneWeek));
     }
 
 
-
+    /**
+     *
+     * @param t set the begining time
+     */
     public void setEndTime(Long t){
-        endTime=t;
+        _startTime=t;
     }
+
+    /**
+     *
+     * @return begin time
+     */
     public Long getEndTime(){
-        return endTime;
+        return _startTime;
     }
+
+    /**
+     * this function adds one shift to the row based on the given shift as well as the
+     * place to put the row in the table
+     * @param givenUpShift object that contains the generic info (start time - endtime)
+     * @param counter the place where we must put the row in the tablelayout
+     */
     public void procVal(GivenUpShift givenUpShift,int counter){
         TableRow tableRow = Process(givenUpShift);
         tableLayout.addView(tableRow,responseNum+counter);
         responseNum++;
     }
+
+    /**
+     * this function sets the date ie (Monday, Tuesday) etc... of the static table rows
+     * that define the days
+     * @param count which day are we setting
+     * @param date the actual day ie (Monday, Tuesday) etc..
+     */
     public void setDateDay(int count,String date){
         TextView textview=null;
         switch(count){
@@ -162,8 +196,11 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
 
 
     }
-    
-    
+
+    /**
+     * This object takes all the shifts and begins to populate the table
+     * @param shift specifies the list of shifts for each day.
+     */
     public void setValues(HashMap<String, ArrayList<GivenUpShift>> shift){
         shifts=shift;
         int counter =0;
@@ -187,11 +224,16 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    /**
+     * Create the row ,populate it and return it to be added.
+     * @param givenUpShift shift object
+     * @return the row created
+     */
     public TableRow Process(GivenUpShift givenUpShift){
         if(givenUpShift.getShiftId()!=null) {
 
-            TableRow tableRow = AddRow(ConvertTimeString(givenUpShift.getStartTime()),
-                    ConvertTimeString(givenUpShift.getEndTime()),givenUpShift);
+            TableRow tableRow = AddRow(StringFormater.getmInstance().ConvertTimeString(givenUpShift.getStartTime()),
+                    StringFormater.getmInstance().ConvertTimeString(givenUpShift.getEndTime()),givenUpShift);
             return tableRow;
         }else{
             return AddRow("No","Shifts",null);
@@ -200,10 +242,23 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
 
 
     }
+
+    /**
+     * THis function gets called by the fragment. Uses a momento type pattern to store the states
+     * of the previous dates so we dont need to recache all the dates but instead just repopulate.
+     * @return the shifts objects
+     */
     public HashMap<String,ArrayList<GivenUpShift>> getWeekShift(){
         return shifts;
     }
 
+    /**
+     *
+     * @param start start time
+     * @param end end time
+     * @param givenUpShift actual shift object is needed once the row is clicked for more info
+     * @return the row object created
+     */
     public TableRow AddRow(String start, String end,final GivenUpShift givenUpShift){
         TableRow tr = new TableRow(mActivity);
         final TextView textView = new TextView(mActivity);
@@ -240,6 +295,7 @@ public class SwapShiftModel extends StringFormater implements  Serializable{
 
                     Bundle bundle= new Bundle();
                     bundle.putSerializable("Shift",givenUpShift);
+
                     confirmationDialog.setArguments(bundle);
                     confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Alert Dialog Fragment");
 

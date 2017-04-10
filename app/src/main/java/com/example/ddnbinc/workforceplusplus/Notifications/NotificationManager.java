@@ -18,6 +18,7 @@ import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -28,7 +29,7 @@ import java.io.Serializable;
  * manages the notifications
  */
 
-public class NotificationManager extends StringFormater{
+public class NotificationManager{
 
     private Activity mActivity;
     private Bundle bundle;
@@ -36,7 +37,6 @@ public class NotificationManager extends StringFormater{
     private Employee[] employee;
     private Query query;
     private ProgressBarPresenter progressBarPresenter;
-    private StringFormater stringFormater;
     private Shifts shifts;
     private String temp;
 
@@ -86,9 +86,14 @@ public class NotificationManager extends StringFormater{
      */
     public  static void deleteNotification(String notification_id, MainActivity mActivity){
         DataBaseConnectionPresenter dataBaseConnectionPresenter =((MainActivity)mActivity).getDataBaseConnectionPresenter();
-
-        dataBaseConnectionPresenter.getDbReference().child("Users").child(((MainActivity)mActivity).getEmployee().getEmployeeId())
-                .child("Notifications").child(notification_id).setValue(null);
+          try {
+              dataBaseConnectionPresenter.getDbReference().child("Users")
+                      .child(((MainActivity) mActivity)
+                      .getEmployee().getEmployeeId())
+                      .child("Notifications").child(notification_id).setValue(null);
+            }catch (DatabaseException e){
+                e.printStackTrace();
+            }
     }
 
     /*
@@ -118,12 +123,17 @@ public class NotificationManager extends StringFormater{
        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if(dataSnapshot.hasChild("privilleges")){
-                    employee[u] = dataSnapshot.getValue(Manager.class);
-                }else{employee[u] = dataSnapshot.getValue(TeamMember.class);}
-                progressBarPresenter.Hide();
-                if(employee[0]!=null)LoadView();
+                try {
+                    if (dataSnapshot.hasChild("privilleges")) {
+                        employee[u] = dataSnapshot.getValue(Manager.class);
+                    } else {
+                        employee[u] = dataSnapshot.getValue(TeamMember.class);
+                    }
+                    progressBarPresenter.Hide();
+                    if (employee[0] != null) LoadView();
+                }catch (DatabaseException e){
+                    e.printStackTrace();
+                }
 
             }
 
@@ -143,11 +153,13 @@ public class NotificationManager extends StringFormater{
                 addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                shifts = dataSnapshot.getValue(Shifts.class);
-                shifts.setShiftId(dataSnapshot.getKey());
-                //if(temp!=null)
-                setGiver(shifts.getEmployeeid());
-               // else{LoadView();}
+                try {
+                    shifts = dataSnapshot.getValue(Shifts.class);
+                    shifts.setShiftId(dataSnapshot.getKey());
+                    setGiver(shifts.getEmployeeid());
+                }catch (DatabaseException e){
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -163,8 +175,8 @@ public class NotificationManager extends StringFormater{
         try {
             Bundle new_bundle = new Bundle();
 
-            stringFormater= new StringFormater();
-            String time = stringFormater.Process(shifts.getStartTime(), shifts.getEndTime());
+
+            String time = StringFormater.getmInstance().Process(shifts.getStartTime(), shifts.getEndTime());
 
             bundle.putString("Time", time);
             FragmentManager fragmentManager = ((MainActivity)mActivity).getFragmentManager();

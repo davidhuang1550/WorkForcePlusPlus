@@ -49,10 +49,11 @@ public class GiveUpConfirmation extends DialogFragment {
 
                     setShowsDialog(false);
 
-                    Bundle bundle_new = new Bundle();
                     bundle.putString("Title","Shift Given Up");
                     bundle.putString("Message","Shift is given up");
+                    bundle.putBoolean("IsBack",false);
                     ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+                    confirmationDialog.setArguments(bundle);
                     confirmationDialog.show(((MainActivity)mActivity).getFragmentManager(),"Tag");
 
 

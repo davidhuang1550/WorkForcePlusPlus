@@ -8,6 +8,7 @@ import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnecti
 import com.example.ddnbinc.workforceplusplus.Dialogs.Default.ProgressBarPresenter;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
@@ -46,7 +47,13 @@ public class LoginModel {
 
                             }
                         }
-                    });
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressBarPresenter.Hide();
+                    Toast.makeText(mActivity,"Please Check your internet Connetion", Toast.LENGTH_LONG).show();
+                }
+            });
         }catch (NullPointerException e){
             progressBarPresenter.Hide();
             e.printStackTrace();

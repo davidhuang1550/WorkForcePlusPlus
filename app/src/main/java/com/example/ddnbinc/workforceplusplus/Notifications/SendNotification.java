@@ -8,13 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +75,7 @@ public class SendNotification {
                 return params;
             }
         };
-        MySingleton.getmInstance(((MainActivity)mActivity)).addRequestQueue(stringRequest);
+        RequestSingletonQueue.getmInstance(((MainActivity)mActivity)).addRequestQueue(stringRequest);
 
 
     }

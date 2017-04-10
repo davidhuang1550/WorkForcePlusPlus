@@ -18,7 +18,7 @@ public class Manager extends Employee implements Serializable,Parcelable {
     public Manager(){
 
     }
-    /*
+    /**
     * @param f = FCM TOKEN
     * @param s = Start Date
     * @param e = Email
@@ -28,7 +28,6 @@ public class Manager extends Employee implements Serializable,Parcelable {
     * @param not = Notifications
     * @param n = Name
     * @param stored = Stored Images
-
     */
 
     public Manager(String f, String s, String e, String p, String id, String priv,
@@ -84,8 +83,8 @@ public class Manager extends Employee implements Serializable,Parcelable {
     public void setFcmToken(String fcmToken) {
         super.setFcmToken(fcmToken);
     }
-    public String getPrivilleges() {
-        return super.getPrivilleges();
+    public String getPrivileges() {
+        return super.getPrivileges();
     }
     public String getName() {
         return super.getName();
@@ -104,7 +103,7 @@ public class Manager extends Employee implements Serializable,Parcelable {
     }
 
     public void setPrivilleges(String privilleges) {
-        super.setPrivilleges(privilleges);
+        super.setPrivileges(privilleges);
     }
 
     @Override

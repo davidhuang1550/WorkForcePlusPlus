@@ -18,22 +18,22 @@
             android:columnCount="1">
             <com.github.siyamed.shapeimageview.CircularImageView
                 android:layout_width="123dp"
-                android:layout_marginTop="45dp"
+                android:layout_marginTop="15dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_height="96dp"
                 android:src="@drawable/default_profile"
                 android:layout_row="0"
                 android:id="@+id/profileImage" />
 
-            <Button
-                android:text="Upload"
+            <ImageView
+                android:src="@drawable/camera"
                 android:layout_gravity="center_horizontal"
                 android:layout_row="1"
+                android:clickable="true"
                 android:layout_width="104dp"
-                android:layout_height="28dp"
+                android:layout_height="48dp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:background="@color/backgroundblue"
                 android:id="@+id/upload" />
         </GridLayout>
 

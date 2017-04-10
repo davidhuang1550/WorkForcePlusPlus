@@ -19,14 +19,14 @@ public class TeamMember extends Employee implements Serializable,Parcelable {
     public TeamMember(){
 
     }
-    /*
+    /**
     * @param f = FCM TOKEN
     * @param s = Start Date
     * @param e = Email
     * @param p = Password
     * @param id = Employee Id
     * @param priv = Privilleges
-    * @param not = Notifications
+    * @param noti = Notifications
     * @param n = Name
     * @param stored = Stored Images
     */
@@ -80,8 +80,8 @@ public class TeamMember extends Employee implements Serializable,Parcelable {
     public void setFcmToken(String fcmToken) {
         super.setFcmToken(fcmToken);
     }
-    public String getPrivilleges() {
-        return super.getPrivilleges();
+    public String getPrivileges() {
+        return super.getPrivileges();
     }
     public String getName() {
         return super.getName();
@@ -99,8 +99,8 @@ public class TeamMember extends Employee implements Serializable,Parcelable {
     public void setStoredImages(HashMap<String, String> storedImages) {
         super.setStoredImages(storedImages);
     }
-    public void setPrivilleges(String privilleges) {
-        super.setPrivilleges(privilleges);
+    public void setPrivileges(String privilleges) {
+        super.setPrivileges(privilleges);
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -109,7 +109,7 @@ public class TeamMember extends Employee implements Serializable,Parcelable {
         setEmail(dest.readString());
         setEmployeeId(dest.readString());
         setPassword(dest.readString());
-        setPrivilleges(dest.readString());
+        setPrivileges(dest.readString());
         setName(dest.readString());
 
     }
@@ -120,7 +120,7 @@ public class TeamMember extends Employee implements Serializable,Parcelable {
         setEmail(in.readString());
         setEmployeeId(in.readString());
         setPassword(in.readString());
-        setPrivilleges(in.readString());
+        setPrivileges(in.readString());
         setName(in.readString());
 
     }
