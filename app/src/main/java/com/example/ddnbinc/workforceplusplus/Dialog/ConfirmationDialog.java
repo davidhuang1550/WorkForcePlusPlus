@@ -10,6 +10,8 @@ import android.os.Bundle;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.R;
 
+import java.io.IOException;
+
 /**
  * Created by davidhuang on 2017-01-27.
  */
@@ -30,8 +32,12 @@ public class ConfirmationDialog extends DialogFragment {
 
 
         if(bundle!=null){
-            alertDialog.setTitle(bundle.getString("Title"));
-            alertDialog.setMessage(bundle.getString("Message","Confirmation sent to manager"));
+            try {
+                alertDialog.setTitle(bundle.getString("Title"));
+                alertDialog.setMessage(bundle.getString("Message", "Confirmation sent to manager"));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         else{
             alertDialog.setMessage("Confirmation sent to manager");
@@ -40,9 +46,10 @@ public class ConfirmationDialog extends DialogFragment {
         alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(bundle!=null) {
-                        ((MainActivity) mActivity).onBackPressed();
-                }
+               /* boolean isback = bundle.getBoolean("IsBack",true);
+                if(isback==false) {
+                //        ((MainActivity) mActivity).onBackPressed();
+                }*/
             }
         });
         return alertDialog.create();

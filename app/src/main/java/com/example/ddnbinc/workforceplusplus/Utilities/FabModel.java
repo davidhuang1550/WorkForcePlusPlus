@@ -25,15 +25,10 @@ public class FabModel {
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
                 bundle.putString("GiveUpShift","yes");
-
+                bundle.putBoolean("type",false);
                 ViewShift viewShift = new ViewShift();
                 viewShift.setArguments(bundle);
 
-               /* FragmentTransaction transaction = ((MainActivity) activity).getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.animator.enter_anim, R.animator.exit_anim, R.animator.enter_anim_back, R.animator.exit_anime_back);
-                transaction.add(R.id.content_frame, viewShift).addToBackStack("Shifts").commit();
-
-                */
                 FragmentManager fragmentManager = ((MainActivity)activity).getFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
             }

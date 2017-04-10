@@ -19,7 +19,24 @@
     <string name="MESSAGE">message</string>
     <string name="URGENT">urgent</string>
 
+    <!-- These here are the settings strings -->
+    <string name="SETTINGS">Settings</string>
+    <string name="NOTIFICATIONS_STATUS">Notification Status</string>
+    <string name="RESET_PASSWORD">Reset Password</string>
+    <string name="HIDE_ADS">Hide Ads</string>
+    <string name="RESET_HINT">Reset Hint</string>
+    <string name="CHANGE_NAME">Change Name</string>
+    <string name="THEME">Theme</string>
 
+    <string name="DARK_THEME">Dark Theme</string>
+    <string name="LIGHT_THEME">Light Theme</string>
+    <string name="NOTIFICATIONS_ENABLED">Notifications enabled</string>
+    <string name="NOTIFICATIONS_DISABLED">Notifications disabled</string>
+    <string name="HINT_RESET_TRUE">true</string>
+    <string name="HINT_RESET_FALSE">false</string>
 
+    <string name="PREVIOUS_WEEK">Previous week</string>
+    <string name="NEXT_WEEK">Next week</string>
+    <string name="INIT_LOAD">Init Load</string>
 
 </resources>

@@ -144,28 +144,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final MessageAdapter.ViewHolder holder, final int position) {
-        if(type){
-            final String imageKey  =((ImageMessage)messages.get(position)).getImageKey();
-            Uri imagePath = employee.getFindImagePath(imageKey);
-            if(imagePath != null){
-                try {
-                    setImage(holder.imageView, imagePath);
-                }catch (IOException e){
-                    downloadImage(imageKey,holder.imageView);
+    public void onBindViewHolder(MessageAdapter.ViewHolder holder, int position) {
+        if(holder.timestamp != null) {
+            if (type) {
+                final String imageKey = ((ImageMessage) messages.get(position)).getImageKey();
+                Uri imagePath = employee.getFindImagePath(imageKey);
+                // if(holder.imageView==null) holder.imageView = createImageView();
+                if (imagePath != null) {
+                    try {
+                        setImage(holder.imageView, imagePath);
+                    } catch (IOException e) {
+                        downloadImage(imageKey, holder.imageView);
 
+                    }
+                    // if imagePath returuns Null then delete it from the db and download the image again.
+                    // consider using a local db to store the image reference instead of using the cloud
+                } else {
+                    downloadImage(imageKey, holder.imageView);
                 }
-                // if imagePath returuns Null then delete it from the db and download the image again.
-                // consider using a local db to store the image reference instead of using the cloud
+            } else {
+                if (!isemployee)
+                    holder.title.setText(((TextMessage) messages.get(position)).getSenderID());
+                else holder.tableLayout.removeView(holder.sender);
+
+                holder.message.setText((((TextMessage) messages.get(position)).getMessage()) + "  " +
+                        StringFormater.getmInstance().time(messages.get(position).getTimestamp()));
+
             }
-            else {
-                downloadImage(imageKey,holder.imageView);
-            }
-        }else{
-            if(!isemployee) holder.title.setText(((TextMessage)messages.get(position)).getSenderID());
-            else holder.tableLayout.removeView(holder.sender);
-            holder.message.setText((((TextMessage) messages.get(position)).getMessage())+ "  "+
-                    StringFormater.getmInstance().time(messages.get(position).getTimestamp()));
         }
     }
 
@@ -236,7 +241,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
     public ImageView createImageView(){
         ImageView imageView = new ImageView(mActivity);
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT,1.0f);
+        imageView.setLayoutParams(layoutParams);
+        imageView.setPadding(0,0,10,0);
 
+        imageView.setMinimumHeight(700);
+        imageView.setMinimumWidth(700);
 
         return imageView;
     }
@@ -259,13 +270,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             if(type){
 
                 imageView = createImageView();
-                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,1.0f);
-                this.imageView.setLayoutParams(layoutParams);
-                this.imageView.setPadding(0,0,10,0);
 
-                imageView.setMinimumHeight(700);
-                imageView.setMinimumWidth(700);
                 message.addView(imageView);
 
             }else{
@@ -274,8 +279,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 this.message = createTextView();
 
                 message.addView(this.message);
-                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams layoutParams = new TableRow.LayoutParams
+                        (TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT,1.0f);
+
                 this.message.setLayoutParams(layoutParams);
                 this.message.setPadding(0,0,10,0);
 
@@ -285,6 +292,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }
         }
     }
+
 
     private String saveToInternalStorage(Bitmap bitmapImage){
 

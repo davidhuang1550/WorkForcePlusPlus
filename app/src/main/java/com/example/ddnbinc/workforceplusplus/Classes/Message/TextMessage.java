@@ -41,7 +41,6 @@ public class TextMessage extends Message {
     public boolean getType() {
         return false;
     }
-    public void setType(boolean type){super.setType(type);}
     public String getSenderName() {
         return super.getSenderName();
     }

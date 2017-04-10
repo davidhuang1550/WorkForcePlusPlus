@@ -29,30 +29,62 @@ public class MessageNotification implements Notification {
 
     }
 
+    /**
+     *
+     * @param Title title usually the person messaging
+     * @param Message message the actual message
+     * @param Timestamp time that the message was created
+     */
     public MessageNotification(String Title, String Message, Long Timestamp){
         this.Title = Title;
         this.Message = Message;
         this.Timestamp = Timestamp;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTitle() {
         return Title;
     }
 
+    /**
+     *
+     * @param title
+     */
     public void setTitle(String title) {
         Title = title;
     }
+
+    /**
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(String id) {
         this.id = id;
     }
+
+    /**
+     *
+     * @return
+     */
     public String getMessage() {
         return Message;
     }
 
+    /**
+     *
+     * @param message
+     */
     public void setMessage(String message) {
         Message = message;
     }

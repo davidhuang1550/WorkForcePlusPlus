@@ -20,7 +20,7 @@ public abstract class Employee implements Serializable,Parcelable{
     private String Email;
     private String EmployeeId;
     private String Password;
-    private String Privilleges;
+    private String Privileges;
     private String Name;
     private ArrayList<Notification> notification;
     private HashMap<String,String> storedImages;
@@ -28,17 +28,18 @@ public abstract class Employee implements Serializable,Parcelable{
     public Employee(){
 
     }
-    /*
-    * @param f = FCM TOKEN
-    * @param s = Start Date
-    * @param e = Email
-    * @param p = Password
-    * @param id = Employee Id
-    * @param priv = Privilleges
-    * @param not = Notifications
-    * @param n = Name
-    * @param stored = Stored Images
-    */
+
+    /**
+     * @param f = FCM TOKEN
+     * @param s = Start Date
+     * @param e = Email
+     * @param p = Password
+     * @param id = Employee Id
+     * @param priv = Privilleges
+     * @param not = Notifications
+     * @param n = Name
+     * @param stored = Stored Images
+     */
 
     public Employee(String f, String s, String e,String p,String id,String priv,ArrayList<Notification> not,String n,HashMap<String,String> stored){
         FcmToken=f;
@@ -46,7 +47,7 @@ public abstract class Employee implements Serializable,Parcelable{
         Email=e;
         Password=p;
         EmployeeId=id;
-        Privilleges=priv;
+        Privileges=priv;
         notification=not;
         Name=n;
         storedImages=stored;
@@ -110,12 +111,12 @@ public abstract class Employee implements Serializable,Parcelable{
     public void setFcmToken(String fcmToken) {
         FcmToken = fcmToken;
     }
-    public String getPrivilleges() {
-        return Privilleges;
+    public String getPrivileges() {
+        return Privileges;
     }
 
-    public void setPrivilleges(String privilleges) {
-        Privilleges = privilleges;
+    public void setPrivileges(String privilleges) {
+        Privileges = privilleges;
     }
     public String getName() {
         return Name;

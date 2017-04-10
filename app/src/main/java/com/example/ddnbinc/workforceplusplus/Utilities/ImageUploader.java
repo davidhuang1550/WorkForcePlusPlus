@@ -106,8 +106,10 @@ public  class ImageUploader {
                         break;
                     case R.string.CHAT_ROOM_IMAGE:
                     // chat room image
-                        Message sendingMessage = new ImageMessage(((MainActivity)mActivity).getEmployee().getEmployeeId(),
-                            (System.currentTimeMillis()/1000),((MainActivity)mActivity).getEmployee().getName(),key);
+                        Message sendingMessage = new ImageMessage((
+                                (MainActivity)mActivity).getEmployee().getEmployeeId(),
+                                (System.currentTimeMillis()/1000),
+                                ((MainActivity)mActivity).getEmployee().getName(),key);
 
                         SendMessageManager.SendMessage(sendingMessage,dataBaseConnectionPresenter);
                         break;

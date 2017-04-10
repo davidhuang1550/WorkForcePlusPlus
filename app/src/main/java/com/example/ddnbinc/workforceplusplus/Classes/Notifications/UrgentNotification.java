@@ -52,4 +52,9 @@ public class UrgentNotification implements  Notification , Serializable {
 
     }
 
+    @Override
+    public void setId(String id) {
+
+    }
+
 }

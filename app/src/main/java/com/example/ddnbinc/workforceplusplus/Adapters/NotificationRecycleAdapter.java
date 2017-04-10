@@ -53,7 +53,7 @@ public class NotificationRecycleAdapter extends RecyclerView.Adapter<Notificatio
         notification.setTimestampView(holder.Timestamp);
         notification.setTitle(holder.Title);
 
-        ((ResponseNotification) notification).setListener(holder,mActivity);
+        ((Notification) notification).setListener(holder,mActivity);
 
     }
 

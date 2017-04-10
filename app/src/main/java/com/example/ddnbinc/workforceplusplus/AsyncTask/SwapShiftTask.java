@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
  * Created by david on 2017-01-23.
  */
 
-public class SwapShiftTask extends StringFormater{
+public class SwapShiftTask{
 
     private LinkedHashMap<String , ArrayList<GivenUpShift>> shifts;
     private Long time_now;
@@ -25,7 +25,6 @@ public class SwapShiftTask extends StringFormater{
     private SwapShiftModel swapShiftModel;
 
     public SwapShiftTask(SwapShiftModel swap, Query q,Long time_d,Long time_n){
-        super();
         shifts= new LinkedHashMap<>();
         swapShiftModel=swap;
         query=q;
@@ -35,71 +34,71 @@ public class SwapShiftTask extends StringFormater{
 
     public void Execute() {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    try {
-                        Iterable iterator = dataSnapshot.getChildren();
-                        Iterator loop = iterator.iterator();
-                        time_now+=86400;
-                        ArrayList<GivenUpShift> tempshifts = new ArrayList<GivenUpShift>();
-                        DataSnapshot dataSnapshotShift = null;
-                        GivenUpShift givenUpShift= null;
-                        boolean next = true;
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    Iterable iterator = dataSnapshot.getChildren();
+                    Iterator loop = iterator.iterator();
+                    time_now+=86400;
+                    ArrayList<GivenUpShift> tempshifts = new ArrayList<GivenUpShift>();
+                    DataSnapshot dataSnapshotShift = null;
+                    GivenUpShift givenUpShift= null;
+                    boolean next = true;
 
-                        while(loop.hasNext() ||next==false){
-                            if(next) {
-                                dataSnapshotShift=(DataSnapshot)loop.next();
-                                givenUpShift = dataSnapshotShift.getValue(GivenUpShift.class);
-                                givenUpShift.setShiftId(dataSnapshotShift.getKey());
-                            }
-                            try {
-                                if(givenUpShift.getStartTime()<=time_now){
-                                    tempshifts.add(givenUpShift);
-                                    next=true;
-                                    if(!loop.hasNext()){
-                                        cloneobj(tempshifts,time_now);
-                                        time_now+=86400;
-                                    }
-
-                                }
-                                else{
+                    while(loop.hasNext() ||next==false){
+                        if(next) {
+                            dataSnapshotShift=(DataSnapshot)loop.next();
+                            givenUpShift = dataSnapshotShift.getValue(GivenUpShift.class);
+                            givenUpShift.setShiftId(dataSnapshotShift.getKey());
+                        }
+                        try {
+                            if(givenUpShift.getStartTime()<=time_now){
+                                tempshifts.add(givenUpShift);
+                                next=true;
+                                if(!loop.hasNext()){
                                     cloneobj(tempshifts,time_now);
                                     time_now+=86400;
-                                    next=false;
-                                    if(time_now>time_diff)break;
                                 }
-                            }catch (ClassCastException e){
-                                e.printStackTrace();
-                            }
 
-                        }
-                        if(shifts.size()<7){
-                            for(int i= shifts.size(); i<7;i++){
-                                shifts.put(setDays(time_now),tempshifts);
+                            }
+                            else{
+                                cloneobj(tempshifts,time_now);
                                 time_now+=86400;
+                                next=false;
+                                if(time_now>time_diff)break;
                             }
-                        }
-                        swapShiftModel.setEndTime(time_diff);
-                        swapShiftModel.setValues(shifts);
-
-
-
-                        } catch (ArrayIndexOutOfBoundsException e) {
+                        }catch (ClassCastException e){
                             e.printStackTrace();
                         }
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+                    }
+                    if(shifts.size()<7){
+                        for(int i= shifts.size(); i<7;i++){
+                            shifts.put(StringFormater.getmInstance().setDays(time_now),tempshifts);
+                            time_now+=86400;
+                        }
+                    }
+                    swapShiftModel.setEndTime(time_diff);
+                    swapShiftModel.setValues(shifts);
+
+
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
     public synchronized void  cloneobj(ArrayList<GivenUpShift> temp,Long time){
         ArrayList<GivenUpShift> into= new ArrayList<GivenUpShift>();
         for(GivenUpShift s : temp){
             into.add(s);
         }
-        shifts.put(setDays(time),into);
+        shifts.put(StringFormater.getmInstance().setDays(time),into);
 
         temp.clear();
 

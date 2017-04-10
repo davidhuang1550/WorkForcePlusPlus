@@ -19,17 +19,52 @@ import java.security.Timestamp;
  */
 
 public interface Notification {
+    /**
+     *
+     * @return
+     */
     public Long getTimestamp();
 
+    /**
+     *
+     * @param timestamp
+     */
     public void setTimestamp(Long timestamp);
 
+    /**
+     *
+     * @param view
+     */
     public void setImageView(ImageView view);
 
+    /**
+     *
+     * @param title
+     */
     public void setTitle(TextView title);
 
+    /**
+     *
+     * @param description
+     */
     public void setDescription(TextView description);
 
+    /**
+     *
+     * @param timestamp
+     */
     public void setTimestampView(TextView timestamp);
 
+    /**
+     *
+     * @param viewHolder contains the whole view in which we must create a listener for dynamically
+     * @param activity
+     */
     public void setListener(NotificationRecycleAdapter.ViewHolder viewHolder, final Activity activity);
+
+    /**
+     *
+     * @param id
+     */
+    public void setId(String id);
 }

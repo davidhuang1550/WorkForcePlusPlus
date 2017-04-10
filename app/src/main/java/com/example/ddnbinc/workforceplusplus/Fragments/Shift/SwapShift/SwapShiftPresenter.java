@@ -46,9 +46,9 @@ public class SwapShiftPresenter implements Serializable,Parcelable {
 
 
 
-    public SwapShiftPresenter(Activity a, DataBaseConnectionPresenter data, SwipeRefreshLayout swipe,View v,View main){
+    /*public SwapShiftPresenter(Activity a, DataBaseConnectionPresenter data, SwipeRefreshLayout swipe,View v,View main){
         swapShiftModel = new SwapShiftModel(a,data,swipe,v,main);
-    }
+    }*/
     public SwapShiftPresenter(Activity a, SwipeRefreshLayout swipe,View main){
         swapShiftModel = new SwapShiftModel(a,swipe,main);
     }
@@ -68,9 +68,9 @@ public class SwapShiftPresenter implements Serializable,Parcelable {
     public void setTime(Long time){
         swapShiftModel.setEndTime(time);
     }
-    public void next_week(String s){
-        swapShiftModel.next_init(s);
-    }
+    //public void next_week(String s){
+       // swapShiftModel.next_init(s);
+   // }
     public void setDatabase(DataBaseConnectionPresenter data){
         swapShiftModel.setDatabase(data);
     }

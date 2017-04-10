@@ -69,8 +69,10 @@ public class ChatRoom extends Fragment implements View.OnClickListener{
             case R.id.send :
                 String message = messageLog.getText().toString();
                 if(message.length()!=0){
-                    Message sendingMessage = new TextMessage(((MainActivity)mActivity).getEmployee().getEmployeeId(),
-                            (System.currentTimeMillis()/1000), message,((MainActivity)mActivity).getEmployee().getName());
+                    Message sendingMessage = new TextMessage((
+                            (MainActivity)mActivity).getEmployee().getEmployeeId(),
+                            (System.currentTimeMillis()/1000),
+                            message,((MainActivity)mActivity).getEmployee().getName());
 
                     SendMessageManager.SendMessage(sendingMessage,dataBaseConnectionPresenter);
                     messageLog.setText("");

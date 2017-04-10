@@ -53,7 +53,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener{
 
         TextView email = (TextView)myView.findViewById(R.id.Email);
         employee = ((MainActivity)mActivity).getEmployee();
-        Button upload = (Button)myView.findViewById(R.id.upload);
+        ImageView upload = (ImageView) myView.findViewById(R.id.upload);
         upload.setOnClickListener(this);
          final ImageView imageView = (ImageView) myView.findViewById(R.id.profileImage);
             FirebaseStorage storage = FirebaseStorage.getInstance();

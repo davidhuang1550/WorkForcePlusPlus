@@ -20,11 +20,7 @@ import com.example.ddnbinc.workforceplusplus.R;
  * Created by davidhuang on 2017-03-05.
  * once a notification is sent here add it also to pending notifications and if a notification is clicked
  * then click onto it would remove it from the notification tab
- *
- * String sourceString = "<b>" + id + "</b> " + name;
- mytextview.setText(Html.fromHtml(sourceString));
-
- */
+ **/
 
 public class NotificationTab extends Fragment {
     private View mView;
@@ -46,6 +42,8 @@ public class NotificationTab extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)mView.findViewById(R.id.swiperefresh);
         notificationTabPresenter = new NotificationTabPresenter(mActivity,recylerview,swipeRefreshLayout);
         recylerview.setHasFixedSize(true);
+        swipeRefreshLayout.setEnabled(false);
+
         LinearLayoutManager llm = new LinearLayoutManager(mActivity);
         recylerview.setLayoutManager(llm);
         notificationTabPresenter.SetView();
