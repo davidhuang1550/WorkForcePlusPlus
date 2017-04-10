@@ -122,7 +122,7 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
 
     public void setDisplay(){
         /*
-        This will be replaced with a list of posted shift later.
+         * This will be replaced with a list of posted shift later.
          */
 
 
@@ -130,7 +130,7 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
         fragmentManager.beginTransaction().replace(R.id.content_frame,new ViewShift()).commit();
     }
     /*
-    shift trade denied move the pending shift back to given up shift for someone else to take
+     * shift trade denied move the pending shift back to given up shift for someone else to take
      */
     public void MoveToGivenUpShifts(){
         destoryPending();
@@ -138,7 +138,7 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
 
     }
     /*
-    remove from pending and given up and then swap the shifts with the two employees
+     * remove from pending and given up and then swap the shifts with the two employees
      */
     public void Accepted(){
         destoryPending();
@@ -162,6 +162,11 @@ public class DecisionFragment extends Fragment implements  View.OnClickListener 
 
         dataBaseConnectionPresenter.getDbReference().child("Users").child(employees[1].getEmployeeId())
                 .child("Shifts").child(givenUpShift.getShiftId()).setValue(givenUp);
+
+        // go into the shift and change the name
+        dataBaseConnectionPresenter.getDbReference().child("Shifts").child(givenUpShift.getShiftId())
+                .child("employeeid").setValue(employees[1].getEmployeeId());
+
     }
 
     public void AddToGivenUp(){

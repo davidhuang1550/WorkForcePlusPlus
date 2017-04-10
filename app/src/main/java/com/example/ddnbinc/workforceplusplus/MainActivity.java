@@ -39,6 +39,7 @@ import com.example.ddnbinc.workforceplusplus.Notifications.NotificationManager;
 import com.example.ddnbinc.workforceplusplus.Notifications.NotificationTab;
 import com.example.ddnbinc.workforceplusplus.Utilities.FabPresenter;
 import com.example.ddnbinc.workforceplusplus.Utilities.ImageUploader;
+import com.example.ddnbinc.workforceplusplus.Utilities.Settings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -86,12 +87,13 @@ public class MainActivity extends AppCompatActivity
 
         fabPresenter.Hide();
 
+
         dataBaseConnectionPresenter = DataBaseConnectionPresenter.getInstance();
 
         Bundle bundle = getIntent().getExtras();
 
-        System.out.println(System.currentTimeMillis()/1000);
-
+       // System.out.println(System.currentTimeMillis()/1000);
+        FragmentManager fragmentManager = getFragmentManager();
         if(bundle!=null){
             /*
             called when theres a notification
@@ -107,13 +109,11 @@ public class MainActivity extends AppCompatActivity
                 getUserPresenter.setFlag(notificationManager);
                 getUserPresenter.getUser();
             }else{
-                FragmentManager fragmentManager = getFragmentManager();
                 fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
             }
 
         }
         else{
-            FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().add(R.id.content_frame,new Login()).commit();
         }
 
@@ -200,7 +200,16 @@ public class MainActivity extends AppCompatActivity
         //getMenuInflater().inflate(R.menu.main, menu);
         getMenuInflater().inflate(R.menu.main,menu);
 
+        /*
+         * not in use cases
+         */
+        MenuItem item = menu.findItem(R.id.action_settings);
+        item.setVisible(false);
+        tools.findItem(R.id.Chat).setVisible(false);
+
+
         upload = menu.getItem(0);
+
         upload.setVisible(false); // dont need this yet.
 
         return true;
@@ -245,9 +254,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            getFragmentManager().beginTransaction().replace(R.id.content_main,new Settings()).commit();
+
             return true;
         }else if(id== R.id.upload){
             try {
@@ -315,11 +325,13 @@ public class MainActivity extends AppCompatActivity
             EmailDialog optionsDialog = new EmailDialog();
             optionsDialog.show(getFragmentManager(),"options Dialog");
         } else if (id == R.id.SwapShift) {
+            bundle.putString("name", "Swap Shift");
             bundle.putBoolean("type",true);
             Shift shift = new Shift();
             shift.setArguments(bundle);
             fragmentManager .beginTransaction().replace(R.id.content_frame, shift,"Shift").commit();
         } else if (id == R.id.ViewShift) {
+            bundle.putString("name","Your Shift");
             bundle.putBoolean("type",false);
             Shift shift = new Shift();
             shift.setArguments(bundle);
@@ -328,6 +340,7 @@ public class MainActivity extends AppCompatActivity
             fragmentManager .beginTransaction().replace(R.id.content_frame,new NotificationTab()).commit();
         } else if (id == R.id.Logout) {
             FirebaseAuth.getInstance().signOut();
+            freeUserData();
             fragmentManager.beginTransaction().replace(R.id.content_frame,new Login()).commit();
         }else if (id == R.id.Pending) {
             fragmentManager .beginTransaction().replace(R.id.content_frame,new PendingShifts(),"PendingShift").commit();
@@ -338,6 +351,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void freeUserData(){
+        ImageView imageView = (ImageView) findViewById(R.id.profileImage);
+        imageView.setImageResource(R.drawable.default_profile);
     }
 
     @Override

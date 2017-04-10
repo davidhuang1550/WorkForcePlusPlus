@@ -6,18 +6,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-
 /**
  * Created by david on 2017-01-08.
  */
 
-public class MySingleton {
-    private static MySingleton mInstance;
+public class RequestSingletonQueue {
+    private static RequestSingletonQueue mInstance;
     private Context context;
     private RequestQueue requestQueue;
 
-    private MySingleton(Context con){
+    private RequestSingletonQueue(Context con){
         context=con;
         requestQueue=getRequestQueue();
     }
@@ -29,9 +27,9 @@ public class MySingleton {
 
         return requestQueue;
     }
-    public static synchronized  MySingleton getmInstance( Context con){
+    public static synchronized RequestSingletonQueue getmInstance(Context con){
         if(mInstance==null){
-            mInstance= new MySingleton(con);
+            mInstance= new RequestSingletonQueue(con);
         }
         return mInstance;
     }

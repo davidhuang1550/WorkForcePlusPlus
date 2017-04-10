@@ -63,8 +63,14 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MainView= inflater.inflate(R.layout.swap_shift_page,container,false);
-        ((MainActivity)mActivity).setTitle("Swap Shifts");
+
+      //  Bundle bundle = getArguments();
+        ViewDeterminer = getArguments();
+        ((MainActivity)mActivity).setTitle(ViewDeterminer.getString("name"));
+
         refreshLayout = (SwipeRefreshLayout)MainView.findViewById(R.id.swiperefresh);
+
+        refreshLayout.setEnabled(false);
         NextWeek = (Button)MainView.findViewById(R.id.week_button);
         PreviousWeek=(Button)MainView.findViewById(R.id.previous_button);
         shifts= new Stack<>();
@@ -73,7 +79,7 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
         PreviousWeek.setClickable(false);
         ((MainActivity)mActivity).showFab();
         two_weeks=true;
-        ViewDeterminer = getArguments();
+
 
         init();
 
@@ -117,6 +123,7 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
             Long time = (two_weeks)?replaceableShift.getEndTime():replaceableShift.getEndTime()+604800;
             two_weeks=true;
             shifts.add(replaceableShift.getShift());
+            bundle.putInt("TYPE",R.string.NEXT_WEEK);
             defaults(time,bundle);
             PreviousWeek.setBackgroundResource(R.drawable.swap_shift_button);
             PreviousWeek.setClickable(true);
@@ -129,6 +136,7 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
                 PreviousWeek.setBackgroundResource(R.drawable.swap_shift_gray_button);
                 PreviousWeek.setClickable(false);
             }
+            bundle.putInt("TYPE",R.string.PREVIOUS_WEEK);
             defaults(time,bundle);
 
         }
@@ -176,7 +184,7 @@ public class Shift extends Fragment implements FragmentManager.OnBackStackChange
     public void init(){
         replaceableShift = new replaceable_shift();
         Bundle bundle = new Bundle();
-
+        bundle.putInt("TYPE",R.string.INIT_LOAD);
         Boolean b = ViewDeterminer.getBoolean("type");
         if(b){
             setValues(bundle);

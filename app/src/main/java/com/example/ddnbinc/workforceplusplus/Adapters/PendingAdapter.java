@@ -8,8 +8,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.ddnbinc.workforceplusplus.MainActivity;
 import com.example.ddnbinc.workforceplusplus.Manager.ShiftInfoPresenter;
 import com.example.ddnbinc.workforceplusplus.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -21,13 +25,11 @@ public class PendingAdapter extends BaseAdapter {
     private Activity mActivity;
     private ArrayList<String> PendingShifts;
     private ArrayList<String> PendingShiftsTaker;
-    private View mView;
 
-    public PendingAdapter(Activity activity, ArrayList<String> strings,ArrayList<String> taker,View view){
+    public PendingAdapter(Activity activity, ArrayList<String> strings,ArrayList<String> taker){
         mActivity=activity;
         PendingShifts=strings;
         PendingShiftsTaker=taker;
-        mView=view;
     }
 
     @Override
@@ -51,8 +53,19 @@ public class PendingAdapter extends BaseAdapter {
         final LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(R.layout.pending_shifts_component,null);
         final String text = PendingShiftsTaker.get(i);
-        TextView textView = (TextView)row.findViewById(R.id.Email_id);
-        textView.setText(text+" wants to take a shift from another employee.");
+        final TextView textView = (TextView)row.findViewById(R.id.Email_id);
+        ((MainActivity)mActivity).getDataBaseConnectionPresenter().getDbReference().child("EmployeeKeyToName").child(text)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        textView.setText(dataSnapshot.getValue(String.class)+" wants to take a shift from another employee.");
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +73,7 @@ public class PendingAdapter extends BaseAdapter {
 
 
                 ShiftInfoPresenter shiftInfoPresenter= new ShiftInfoPresenter(mActivity,PendingShifts.get(i),PendingShiftsTaker.get(i));
-                shiftInfoPresenter.setView(mView);
+                shiftInfoPresenter.setView();
             }
         });
 

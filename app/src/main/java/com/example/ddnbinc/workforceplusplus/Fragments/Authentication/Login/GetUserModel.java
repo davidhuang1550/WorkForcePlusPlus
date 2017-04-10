@@ -65,7 +65,7 @@ public class GetUserModel {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    if (dataSnapshot.hasChild("privilleges")) {
+                    if (dataSnapshot.hasChild("privileges")) {
                         employee = dataSnapshot.getValue(Manager.class);
                         ((MainActivity)mActivity).showManagerView();
                     } else {
@@ -88,7 +88,8 @@ public class GetUserModel {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    progressBarPresenter.Hide();
+                    Toast.makeText(mActivity,"Please Check your internet Connetion", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -101,6 +102,7 @@ public class GetUserModel {
     }
     public void redirect_ViewShift(){
         Bundle bundle = new Bundle();
+        bundle.putString("name", "Your Shifts");
         bundle.putBoolean("type",false);
         Shift shift = new Shift();
         shift.setArguments(bundle);

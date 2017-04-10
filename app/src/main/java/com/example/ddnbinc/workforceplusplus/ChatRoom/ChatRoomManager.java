@@ -41,6 +41,7 @@ public class ChatRoomManager {
         this.messages = new ArrayList<>();
         this.employee = ((MainActivity)mActivity).getEmployee();
         this.firstIteration=false;
+        setAdapter();
     }
 
     public void FetchMessages(){
@@ -84,6 +85,7 @@ public class ChatRoomManager {
         dataBaseConnectionPresenter.getDbReference().child("ChatRoom").limitToLast(100).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(firstIteration==false) {
 
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         Message message;
@@ -95,9 +97,9 @@ public class ChatRoomManager {
                         }
                         messages.add(message);
                     }
-                if(firstIteration==false) {
-                    setAdapter();
+
                     firstIteration=true;
+                    messageAdapter.notifyDataSetChanged();
                     forceScrollToBottom();
                 }
             }

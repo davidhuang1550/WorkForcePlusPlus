@@ -28,6 +28,7 @@ public class replaceable_shift extends Fragment {
     private DataBaseConnectionPresenter dataBaseConnectionPresenter;
     private SwapShiftPresenter swapShiftPresenter;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,32 +44,44 @@ public class replaceable_shift extends Fragment {
 
         Bundle bundle = getArguments();
         if(bundle!=null &&dataBaseConnectionPresenter!=null){
-            Long temp = bundle.getLong("Start");
+            int OPTION = bundle.getInt("TYPE",R.string.INIT_LOAD);
+
             try {
-                HashMap<String,ArrayList<GivenUpShift>> hashMap = (HashMap<String,ArrayList<GivenUpShift>>)
-                        bundle.getSerializable("Previous");
+
+
+
                 swapShiftPresenter = (SwapShiftPresenter) bundle.getParcelable("swap");
                 swapShiftPresenter.setClickable(bundle.getBoolean("Clickable"));
                 String employeeid = bundle.getString("Employee");
                 swapShiftPresenter.setDatabase(dataBaseConnectionPresenter);
                 swapShiftPresenter.setView(myView);
 
-                if(hashMap!=null){
-                    swapShiftPresenter.setTime(temp);
-                    setTime(temp);
-                    swapShiftPresenter.setValues(hashMap);
-                } else{
-                    if(temp!=0) {
+                Long temp = bundle.getLong("Start");
+
+                switch(OPTION) {
+                    case R.string.PREVIOUS_WEEK:
+                        HashMap<String,ArrayList<GivenUpShift>> hashMap = (HashMap<String,ArrayList<GivenUpShift>>)
+                                bundle.getSerializable("Previous");
+
                         swapShiftPresenter.setTime(temp);
                         setTime(temp);
-                        swapShiftPresenter.next_week(employeeid);//view shift
-                    }else{
-                        Long time =(System.currentTimeMillis() / 1000);
+                        swapShiftPresenter.setValues(hashMap);
+                        break;
+
+                    case R.string.NEXT_WEEK:
+                        swapShiftPresenter.setTime(temp);
+                        setTime(temp);
+                        swapShiftPresenter.init(employeeid);
+                        break;
+                    case R.string.INIT_LOAD:
+                        Long time = ((System.currentTimeMillis() / 1000)-86400);
                         swapShiftPresenter.setTime(time);
                         setTime(time);
                         swapShiftPresenter.init(employeeid);
-                    }
+                        break;
                 }
+
+
 
 
             }catch (NullPointerException e){

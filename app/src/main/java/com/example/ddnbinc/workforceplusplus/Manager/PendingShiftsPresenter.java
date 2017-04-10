@@ -12,8 +12,8 @@ import android.widget.ListView;
 public class PendingShiftsPresenter {
     private PendingShiftsModel pendingShiftsModel;
 
-    public PendingShiftsPresenter(Activity activity, ListView listView, SwipeRefreshLayout swipeRefreshLayout,View view){
-        pendingShiftsModel = new PendingShiftsModel(activity,listView,swipeRefreshLayout,view);
+    public PendingShiftsPresenter(Activity activity, ListView listView, SwipeRefreshLayout swipeRefreshLayout){
+        pendingShiftsModel = new PendingShiftsModel(activity,listView,swipeRefreshLayout);
     }
     public void fetchShifts(){
         pendingShiftsModel.fetchShifts();

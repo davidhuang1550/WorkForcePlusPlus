@@ -15,9 +15,12 @@ import com.example.ddnbinc.workforceplusplus.Classes.Notifications.ResponseNotif
 import com.example.ddnbinc.workforceplusplus.Classes.Notifications.UrgentNotification;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
+import com.example.ddnbinc.workforceplusplus.Error.ErrorView;
 import com.example.ddnbinc.workforceplusplus.MainActivity;
+import com.example.ddnbinc.workforceplusplus.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -51,28 +54,31 @@ public class NotificationTabManager {
                 addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot snapshot :dataSnapshot.getChildren()){
-                            Notification notifi = null;
-                            if(snapshot.hasChild("Shift")){
-                                notifi = snapshot.getValue(PendingNotification.class);
-                            }else if(snapshot.hasChild("Message")){
-                                notifi = snapshot.getValue(MessageNotification.class);
-                            }else if(snapshot.hasChild("Response")){
-                                notifi = snapshot.getValue(ResponseNotification.class);
-                            }else{
-                                notifi = snapshot.getValue(UrgentNotification.class);
+                        try {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                Notification notifi = null;
+                                if (snapshot.hasChild("shift")) {
+                                    notifi = snapshot.getValue(PendingNotification.class);
+                                } else if (snapshot.hasChild("message")) {
+                                    notifi = snapshot.getValue(MessageNotification.class);
+                                } else if (snapshot.hasChild("response")) {
+                                    notifi = snapshot.getValue(ResponseNotification.class);
+                                } else {
+                                    notifi = snapshot.getValue(UrgentNotification.class);
+                                }
+                                notifi.setId(snapshot.getKey());
+                                notifications.add(notifi);
                             }
-
-                            notifications.add(notifi);
-                        }
-                        if(first_iteration==false){
-                            setView();
-                            first_iteration=true;
-                        }
-                        else{
-                            Snackbar.make(((MainActivity)mActivity).getCurrentFocus(), "New Notifications has been added" +
-                                    ", Please Refresh.", Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+                            if (first_iteration == false) {
+                                setView();
+                                first_iteration = true;
+                            } else {
+                                Snackbar.make(((MainActivity) mActivity).getCurrentFocus(), "New Notifications has been added" +
+                                        ", Please Refresh.", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        }catch (DatabaseException e){
+                            e.printStackTrace();
                         }
                     }
 
@@ -85,22 +91,27 @@ public class NotificationTabManager {
     }
     public void setView(){
         swipeRefreshLayout.setRefreshing(false);
-        adapter = new NotificationRecycleAdapter(notifications,mActivity);
 
+
+        if(notifications.size() == 0){
+            mActivity.getFragmentManager().beginTransaction().replace(R.id.content_frame,new ErrorView()).commit();
+        }
+        else{
+            adapter = new NotificationRecycleAdapter(notifications,mActivity);
+        }
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-               // recyclerView.getAdapter().notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-              //  adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
                 return true;
             }
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 if(direction == ItemTouchHelper.RIGHT){
-                    Toast.makeText(mActivity, "Swiped right", Toast.LENGTH_SHORT).show();
+                //    Toast.makeText(mActivity, "Swiped right", Toast.LENGTH_SHORT).show();
                 }else{
-                    Toast.makeText(mActivity, "Swiped left", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(mActivity, "Swiped left", Toast.LENGTH_SHORT).show();
                 }
                 notifications.remove(viewHolder.getAdapterPosition());
                 adapter.notifyItemRemoved(viewHolder.getAdapterPosition());

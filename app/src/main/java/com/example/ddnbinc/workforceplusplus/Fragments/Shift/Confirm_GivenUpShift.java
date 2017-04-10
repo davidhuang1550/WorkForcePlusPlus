@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.example.ddnbinc.workforceplusplus.Classes.GivenUpShift;
 import com.example.ddnbinc.workforceplusplus.Classes.Notifications.PendingNotification;
+import com.example.ddnbinc.workforceplusplus.Classes.Shifts;
+import com.example.ddnbinc.workforceplusplus.Classes.Users.Employee;
 import com.example.ddnbinc.workforceplusplus.Classes.Users.Manager;
 import com.example.ddnbinc.workforceplusplus.DataBaseConnection.DataBaseConnectionPresenter;
 import com.example.ddnbinc.workforceplusplus.Dialog.ConfirmationDialog;
@@ -70,12 +72,49 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
         return myView;
     }
 
+    public void checkConflictShifts(){
+        String employeeId = ((MainActivity)mActivity).getEmployee().getEmployeeId();
+        dataBaseConnectionPresenter.getDbReference().child("Users").child(employeeId).child("Shifts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean okay= true;
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Shifts shift = snapshot.getValue(Shifts.class);
+                            if((shift.getStartTime() < givenUpShift.getStartTime() &&
+                                    shift.getEndTime() > givenUpShift.getStartTime())
+                                    || shift.getStartTime()> givenUpShift.getStartTime() &&
+                                    shift.getEndTime()<givenUpShift.getEndTime()){
+                                okay = false;
+                                break;
+                            }
+
+                        }
+                        if(okay) {
+                            sendNotification();
+                            ((MainActivity) mActivity).onBackPressed();
+                        }else{
+                            ConfirmationDialog confirmationDialog = new ConfirmationDialog();
+                            Bundle bundle = new Bundle();
+                            bundle.putString("Title","Request Failed");
+                            bundle.putString("Message","This shift conflicts with your other shifts");
+                            confirmationDialog.setArguments(bundle);
+                            confirmationDialog.show(((MainActivity) mActivity).getFragmentManager(), "Alert Dialog Fragment");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.yes:
-                sendNotification();
-
+                checkConflictShifts();
 
                 break;
             case R.id.no:
@@ -96,23 +135,23 @@ public class Confirm_GivenUpShift extends Fragment implements  View.OnClickListe
                         EmployeeId =((MainActivity) mActivity).getEmployee().getEmployeeId();
 
 
-                    // store the notification inside the users notification tab
-                    PendingNotification pendingNotification = new PendingNotification(System.currentTimeMillis()/1000,
-                            GivenUpShift,EmployeeId);
+                        // store the notification inside the users notification tab
+                        PendingNotification pendingNotification = new PendingNotification(System.currentTimeMillis()/1000,
+                                GivenUpShift,EmployeeId);
 
-                    // TODO make it so that we can send these notifications to all managers.
-                    DatabaseReference reference =  dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
-                            .child("Notifications").push();
+                        // TODO make it so that we can send these notifications to all managers.
+                        DatabaseReference reference =  dataBaseConnectionPresenter.getDbReference().child("Users").child("SY6qNTB8EsbNoJ4qjQwX8goWmHE3")
+                                .child("Notifications").push();
 
-                    try {
-                        reference.setValue(pendingNotification);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    SendNotification sendNotification = new SendNotification(mActivity, GivenUpShift, EmployeeId, fcm,reference.getKey());
+                        try {
+                            reference.setValue(pendingNotification);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        SendNotification sendNotification = new SendNotification(mActivity, GivenUpShift, EmployeeId, fcm,reference.getKey());
 
-                    MoveToPending();
-                    sendNotification.sendToken();
+                        MoveToPending();
+                        sendNotification.sendToken();
 
 
                 }

@@ -21,6 +21,7 @@ import com.example.ddnbinc.workforceplusplus.R;
 import com.example.ddnbinc.workforceplusplus.Utilities.StringFormater;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -28,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
  * Created by davidhuang on 2017-02-19.
  */
 
-public class ShiftInfoModel extends StringFormater{
+public class ShiftInfoModel{
 
     private Activity mActivity;
     private String ShiftInfo;
@@ -50,13 +51,17 @@ public class ShiftInfoModel extends StringFormater{
     }
 
     public void getShiftInfo(){
-        try {
+
             dataBaseConnectionPresenter.getDbReference().child("Shifts").child(ShiftInfo)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            shifts = dataSnapshot.getValue(Shifts.class);
-                            getusers();
+                            try {
+                                shifts = dataSnapshot.getValue(Shifts.class);
+                                getusers();
+                            }catch (DatabaseException e){
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
@@ -64,23 +69,26 @@ public class ShiftInfoModel extends StringFormater{
 
                         }
                     });
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
+
     }
 
     public void getusers(){
 
-        getGetterInfo(dataBaseConnectionPresenter.getDbReference().child("Users").child(shifts.getEmployeeid()),0);
+        getTakerInfo(dataBaseConnectionPresenter.getDbReference().child("Users").child(shifts.getEmployeeid()),0);
 
     }
 
-
-
-    public  void getGetterInfo(Query query, final int i){
+    /**
+     * This function is called twice, once for the employee taking the shift and once for the employee giving
+     * the shift, This function is called to retrieve the employee objects.
+     * @param query the query to fetch the employees,
+     * @param i specifies the employee.
+     */
+    public  void getTakerInfo(Query query, final int i){
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                     if (dataSnapshot.hasChild("privilleges")) {
                         employee[i] = dataSnapshot.getValue(Manager.class);
                         //  ((MainActivity)mActivity).showManagerView();
@@ -91,7 +99,9 @@ public class ShiftInfoModel extends StringFormater{
                     employee[i].setEmployeeId(dataSnapshot.getKey());
 
 
-                getTakerInfo(dataBaseConnectionPresenter.getDbReference().child("Users").orderByChild("email").equalTo(Taker),1);
+                if(i == 0){
+                    getTakerInfo(dataBaseConnectionPresenter.getDbReference().child("Users").child(Taker),1);
+                } else View();
 
             }
 
@@ -101,32 +111,7 @@ public class ShiftInfoModel extends StringFormater{
             }
         });
     }
-    public  void getTakerInfo(Query query, final int i){
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    if (dataSnapshot.hasChild("privilleges")) {
-                        employee[i] = snapshot.getValue(Manager.class);
-                        //  ((MainActivity)mActivity).showManagerView();
-                    } else {
-                        employee[i] = snapshot.getValue(TeamMember.class);
-                        //    ((MainActivity)mActivity).hideManagerView();
-                    }
-                    employee[i].setEmployeeId(dataSnapshot.getKey());
-                    break;
-                }
-                View();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-    public void setView(View view){
+    public void setView(){
         getShiftInfo();
 
     }
@@ -136,7 +121,7 @@ public class ShiftInfoModel extends StringFormater{
         bundle.putParcelable("Giver",employee[0]);
         bundle.putSerializable("Shift",shifts);
 
-        String temp = Process(shifts.getStartTime(),shifts.getEndTime());
+        String temp = StringFormater.getmInstance().Process(shifts.getStartTime(),shifts.getEndTime());
         bundle.putString("Time",temp);
 
 
