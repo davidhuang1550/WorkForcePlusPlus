@@ -65,7 +65,7 @@ public class GetUserModel {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    if (dataSnapshot.hasChild("privilleges")) {
+                    if (dataSnapshot.hasChild("privileges")) {
                         employee = dataSnapshot.getValue(Manager.class);
                         ((MainActivity)mActivity).showManagerView();
                     } else {
