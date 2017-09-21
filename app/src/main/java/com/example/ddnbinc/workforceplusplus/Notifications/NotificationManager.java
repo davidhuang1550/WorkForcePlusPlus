@@ -41,9 +41,9 @@ public class NotificationManager{
     private String temp;
 
 
-    /*
+    /**
      * CONSTRUCTOR
-     * @param Activity  = MainActivity
+     * @param activity  = MainActivity
      * @param b = Bundle contains the reason for the notifications ie ( Response or Pending shift etc)
      * @param prog = presenter for the progress bar because we started the loading in the mainactivity
      */

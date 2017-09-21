@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- "Mark Favorite", should appear as action button if possible -->
-    <item
-        android:id="@+id/upload"
-        android:icon="@drawable/upload"
-        android:title="Upload"
-        app:showAsAction="ifRoom"/>
-
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
